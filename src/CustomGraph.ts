@@ -18,6 +18,10 @@ export default class CustomGraph extends Graph {
 
         this.getStylesheet().getDefaultEdgeStyle().edgeStyle = EDGESTYLE.ORTHOGONAL;
 
+        this.setAllowLoops(false);
+        this.setAllowNegativeCoordinates(true);
+        this.setAllowDanglingEdges(false);
+
         // delete selected vertex when delete or backspace is hit
         addEventListener('keydown', event => {
             if (event.key != "Delete" && event.key != "Backspace") return;
