@@ -1,4 +1,5 @@
 import { Cell, Graph, PopupMenuHandler, PopupMenuItem } from "@maxgraph/core";
+import SquareGeometryClass from "./shapes/SquareGeometryClass";
 
 export default class CustomPopupMenuHandler extends PopupMenuHandler {
     constructor(graph: Graph) {
@@ -27,6 +28,7 @@ export default class CustomPopupMenuHandler extends PopupMenuHandler {
                 parent: graph.getDefaultParent(),
                 height: 20,
                 width: 20,
+                geometryClass: SquareGeometryClass,
                 x: me.x,
                 y: me.y,
             });
