@@ -76,3 +76,42 @@
   box-shadow: rgba(228, 121, 17, .5) 0 0 3px 2px;
   outline: 0;
 }
+
+body div.mxPopupMenu {
+  box-shadow: 3px 3px 6px #C0C0C0;
+  background: white;
+  position: absolute;
+  border: 3px solid #e7e7e7;
+  padding: 2px;
+}
+
+body table.mxPopupMenu {
+  border-collapse: collapse;
+  margin: 0px;
+}
+
+body tr.mxPopupMenuItem {
+  color: black;
+  cursor: pointer;
+}
+
+body td.mxPopupMenuItem {
+  padding: 6px 12px 6px 6px;
+  font-family: Arial;
+  font-size: 10pt;
+  user-select: none;
+}
+body td.mxPopupMenuIcon {
+  background-color: white;
+  padding: 0px;
+}
+body tr.mxPopupMenuItemHover {
+  background-color: #eeeeee;
+  color: black;
+}
+table.mxPopupMenu hr {
+  border-top: solid 1px #cccccc;
+}
+table.mxPopupMenu tr {
+  font-size: 4pt;
+}
