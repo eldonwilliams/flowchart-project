@@ -2,9 +2,9 @@ import "@maxgraph/core";
 import CustomGraph from "./CustomGraph";
 import InternalEvent from "@maxgraph/core/dist/view/event/InternalEvent";
 import { addToolbarItem } from "./toolbar";
-import SquareGeometryClass from "./shapes/SquareGeometryClass";
+import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
 import { Client } from "@maxgraph/core";
-import EllipseGeometryClass from "./shapes/EllipseGeometryClass";
+import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
 
 Client.setImageBasePath("/images")
 
