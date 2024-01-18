@@ -1,4 +1,4 @@
-import { Cell, ConnectionHandler, GraphPluginConstructor, InternalMouseEvent } from "@maxgraph/core";
+import { Cell, CellRenderer, ConnectionHandler, GraphPluginConstructor, InternalMouseEvent } from "@maxgraph/core";
 import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
 import { Graph, defaultPlugins } from "@maxgraph/core/dist/view/Graph";
 import CellState from "@maxgraph/core/dist/view/cell/CellState";
