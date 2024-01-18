@@ -12,7 +12,6 @@ const container = document.getElementById("graph-container");
 InternalEvent.disableContextMenu(container);
 
 const graph = new CustomGraph(container);
-graph.setConnectable(true);
 
 const parent = graph.getDefaultParent();
 
