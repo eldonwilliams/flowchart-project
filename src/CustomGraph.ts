@@ -1,4 +1,4 @@
-import { Cell, CellRenderer, ConnectionHandler, GraphPluginConstructor, InternalMouseEvent } from "@maxgraph/core";
+import { Cell, CellRenderer, Client, ConnectionHandler, GraphPluginConstructor, InternalMouseEvent } from "@maxgraph/core";
 import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
 import { Graph, defaultPlugins } from "@maxgraph/core/dist/view/Graph";
 import CellState from "@maxgraph/core/dist/view/cell/CellState";
@@ -21,6 +21,16 @@ export default class CustomGraph extends Graph {
         this.setAllowLoops(false);
         this.setAllowNegativeCoordinates(true);
         this.setAllowDanglingEdges(false);
+        this.setConnectable(true);
+        this.setCellsEditable(true);
+        this.setPanning(true);
+
+        container.addEventListener('wheel', (wv: WheelEvent) => {
+            wv.preventDefault();
+            this.panGraph(wv.deltaX + this.panDx, wv.deltaY + this.panDy);
+        }, {
+            passive: false
+        });
 
         // delete selected vertex when delete or backspace is hit
         addEventListener('keydown', event => {
