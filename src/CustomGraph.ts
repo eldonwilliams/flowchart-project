@@ -17,6 +17,15 @@ export default class CustomGraph extends Graph {
         super(container, null, Object.values(defaultPluginsMap));
 
         this.getStylesheet().getDefaultEdgeStyle().edgeStyle = EDGESTYLE.ORTHOGONAL;
+
+        // delete selected vertex when delete or backspace is hit
+        addEventListener('keydown', event => {
+            if (event.key != "Delete" && event.key != "Backspace") return;
+
+            const selected = this.getSelectionCells();
+
+            this.removeCells(selected, true);
+        });
     }
 
     createCellRenderer(): CellRenderer {
