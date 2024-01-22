@@ -115,3 +115,22 @@ table.mxPopupMenu hr {
 table.mxPopupMenu tr {
   font-size: 4pt;
 }
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+#toolbox {
+  border: #ccc 1px solid;
+  display: flex;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+#properties-mananger {
+  border: #ccc 1px solid;
+  display: flex;
+  padding: 5px;
+  margin-left: 5px;
+}
