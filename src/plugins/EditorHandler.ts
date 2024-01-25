@@ -16,7 +16,7 @@ export default class EditorHandler implements GraphPlugin {
 
     constructor(graph: Graph) {
         this.graph = graph;
-        addEventListener("keydown", this.handleKeydown);
+        addEventListener("keydown", this.handleKeydown.bind(this));
     }
 
     /**
