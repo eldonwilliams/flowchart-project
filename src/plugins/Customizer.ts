@@ -3,7 +3,7 @@ import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
 import { Graph } from "@maxgraph/core/dist/view/Graph";
 
 export default class Customizer implements GraphPlugin {
-    static pluginId = "Customizer";
+    static pluginId = "CustomizerPlugin";
 
     constructor (graph: Graph) {
         graph.getStylesheet().getDefaultEdgeStyle().edgeStyle = EDGESTYLE.ENTITY_RELATION;
