@@ -5,6 +5,8 @@ import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
 import CustomConnectionHandler from "./plugins/CustomConnectionHandler";
 import CustomCellRenderer from "./plugins/CustomCellRenderer";
 import Customizer from "./plugins/Customizer";
+import ZoomHandler from "./plugins/ZoomHandler";
+import EditorHandler from "./plugins/EditorHandler";
 
 const defaultPluginsMap: { [key: string]: GraphPluginConstructor } = {};
 defaultPlugins.forEach(p => defaultPluginsMap[p.pluginId] = p);
@@ -13,27 +15,11 @@ export default class CustomGraph extends Graph {
     constructor(container) {
         defaultPluginsMap.PopupMenuHandler = CustomPopupMenuHandler;
         defaultPluginsMap.ConnectionHandler = CustomConnectionHandler;
-        defaultPluginsMap.Customizer = Customizer;
+        defaultPluginsMap[Customizer.pluginId] = Customizer;
+        defaultPluginsMap[ZoomHandler.pluginId] = ZoomHandler;
+        defaultPluginsMap[EditorHandler.pluginId] = EditorHandler;
 
         super(container, null, Object.values(defaultPluginsMap));
-
-        InternalEvent.addGestureListeners(container, null, () => {
-
-        });
-
-        InternalEvent.addMouseWheelListener((event: WheelEvent) => {
-            if (!event.ctrlKey) return;
-            this.zoom(event.deltaY / 1000);
-        }, container);
-
-        // delete selected vertex when delete or backspace is hit
-        addEventListener('keydown', event => {
-            if (event.key != "Delete" && event.key != "Backspace") return;
-
-            const selected = this.getSelectionCells();
-
-            this.removeCells(selected, true);
-        });
     }
 
     createCellRenderer(): CellRenderer {
