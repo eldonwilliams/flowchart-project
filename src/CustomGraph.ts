@@ -1,10 +1,10 @@
-import { CellRenderer, Client, EventObject, GestureEvent, GraphPluginConstructor, InternalEvent } from "@maxgraph/core";
-import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
+import { CellRenderer, GraphPluginConstructor, InternalEvent } from "@maxgraph/core";
 import { Graph, defaultPlugins } from "@maxgraph/core/dist/view/Graph";
 import CellState from "@maxgraph/core/dist/view/cell/CellState";
-import CustomPopupMenuHandler from "./CustomPopupMenuHandler";
-import CustomConnectionHandler from "./CustomConnectionHandler";
-import CustomCellRenderer from "./CustomCellRenderer";
+import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
+import CustomConnectionHandler from "./plugins/CustomConnectionHandler";
+import CustomCellRenderer from "./plugins/CustomCellRenderer";
+import Customizer from "./plugins/Customizer";
 
 const defaultPluginsMap: { [key: string]: GraphPluginConstructor } = {};
 defaultPlugins.forEach(p => defaultPluginsMap[p.pluginId] = p);
@@ -13,17 +13,9 @@ export default class CustomGraph extends Graph {
     constructor(container) {
         defaultPluginsMap.PopupMenuHandler = CustomPopupMenuHandler;
         defaultPluginsMap.ConnectionHandler = CustomConnectionHandler;
+        defaultPluginsMap.Customizer = Customizer;
 
         super(container, null, Object.values(defaultPluginsMap));
-
-        this.getStylesheet().getDefaultEdgeStyle().edgeStyle = EDGESTYLE.ORTHOGONAL;
-
-        this.setAllowLoops(false);
-        this.setAllowNegativeCoordinates(true);
-        this.setAllowDanglingEdges(false);
-        this.setConnectable(true);
-        this.setCellsEditable(true);
-        this.setPanning(true);
 
         InternalEvent.addGestureListeners(container, null, () => {
 
