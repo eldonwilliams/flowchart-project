@@ -7,12 +7,32 @@
     <title>Flowchart Project</title>
 </head>
 <body>
-    <div id="app-container" class="flex-row">
-        <div id="toolbox"></div>
-        <div class="flex-column">
-            <div id="graph-container"></div>
+    <div class="p-2 w-full h-full">
+        <div class="flex flex-row gap-2 w-full h-full border-stone-500">
+            <div class="p-2 border basis-36 overflow-x-scroll no-scrollbar flex-row justify-center">
+                <p>Toolbox</p>
+                <div id="toolbox" class="flex flex-row justify-center flex-wrap gap-2 mt-2">
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                    <div class="w-12 h-12 border border-stone-800 p-2">Item</div>
+                </div>
+            </div>
+            <div class="flex flex-col h-full flex-1 border overflow-hidden">
+                <div id="graph-container" class="h-full w-full"></div>
+            </div>
+            <div id="properties-mananger" class="p-2 border">
+                <p>Properties</p>
+            </div>
         </div>
-        <div id="properties-mananger"></div>
     </div>
     <script src="./src/index.ts" type="module"></script>
 </body>
