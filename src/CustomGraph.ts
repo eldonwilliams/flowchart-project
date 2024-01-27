@@ -1,4 +1,4 @@
-import { CellRenderer, GraphPluginConstructor, InternalEvent } from "@maxgraph/core";
+import { CellRenderer, GraphPluginConstructor, InternalEvent, RubberBandHandler } from "@maxgraph/core";
 import { Graph, defaultPlugins } from "@maxgraph/core/dist/view/Graph";
 import CellState from "@maxgraph/core/dist/view/cell/CellState";
 import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
@@ -7,6 +7,7 @@ import CustomCellRenderer from "./plugins/CustomCellRenderer";
 import Customizer from "./plugins/Customizer";
 import ZoomHandler from "./plugins/ZoomHandler";
 import EditorHandler from "./plugins/EditorHandler";
+import DragAndDropHandler from "./plugins/DragAndDropHandler";
 
 const defaultPluginsMap: { [key: string]: GraphPluginConstructor } = {};
 defaultPlugins.forEach(p => defaultPluginsMap[p.pluginId] = p);
@@ -18,6 +19,7 @@ export default class CustomGraph extends Graph {
         defaultPluginsMap[Customizer.pluginId] = Customizer;
         defaultPluginsMap[ZoomHandler.pluginId] = ZoomHandler;
         defaultPluginsMap[EditorHandler.pluginId] = EditorHandler;
+        defaultPluginsMap[DragAndDropHandler.pluginId] = DragAndDropHandler;
 
         super(container, null, Object.values(defaultPluginsMap));
     }
