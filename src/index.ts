@@ -1,9 +1,8 @@
 import "@maxgraph/core";
 import CustomGraph from "./CustomGraph";
-import InternalEvent from "@maxgraph/core/dist/view/event/InternalEvent";
-import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
-import { Client } from "@maxgraph/core";
+import { Client, InternalEvent } from "@maxgraph/core";
 import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
+import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
 
 Client.setImageBasePath("/images")
 
@@ -14,8 +13,10 @@ const graph = new CustomGraph(container);
 
 const parent = graph.getDefaultParent();
 
+let v1;
+
 graph.batchUpdate(() => {
-    const v1 = graph.insertVertex({
+    v1 = graph.insertVertex({
         parent,
         size: [80, 30],
         position: [20, 20],
@@ -59,3 +60,4 @@ graph.batchUpdate(() => {
         }
     });
 });
+

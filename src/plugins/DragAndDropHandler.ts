@@ -1,6 +1,4 @@
-import { Cell, CellRenderer, Geometry, GraphPlugin, Shape, gestureUtils } from "@maxgraph/core";
-import { Graph } from "@maxgraph/core/dist/view/Graph";
-import { DropHandler } from "@maxgraph/core/dist/view/other/DragSource";
+import { Cell, CellRenderer, Geometry, Graph, GraphPlugin, Shape, gestureUtils } from "@maxgraph/core";
 import { getDisplayName } from "../shapes/ShapeUtil";
 
 const DEFAULT_HEIGHT_WIDTH = 25;

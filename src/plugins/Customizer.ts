@@ -1,6 +1,5 @@
-import { GraphPlugin } from "@maxgraph/core";
+import { Graph, GraphPlugin } from "@maxgraph/core";
 import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
-import { Graph } from "@maxgraph/core/dist/view/Graph";
 
 export default class Customizer implements GraphPlugin {
     static pluginId = "CustomizerPlugin";

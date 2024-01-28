@@ -1,5 +1,4 @@
-import { GraphPlugin } from "@maxgraph/core";
-import { Graph } from "@maxgraph/core/dist/view/Graph";
+import { Graph, GraphPlugin } from "@maxgraph/core";
 
 export default class EditorHandler implements GraphPlugin {
     static pluginId = "EditorHandlerPlugin";

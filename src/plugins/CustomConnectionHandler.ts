@@ -1,4 +1,4 @@
-import { Cell, CellState, CellStyle, ConnectionHandler, InternalMouseEvent, Point } from "@maxgraph/core";
+import { Cell, CellState, ConnectionHandler, InternalMouseEvent } from "@maxgraph/core";
 import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
 
 export default class CustomConnectionHandler extends ConnectionHandler {

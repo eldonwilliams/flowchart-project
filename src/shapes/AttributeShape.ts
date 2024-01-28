@@ -1,4 +1,4 @@
-import { CellState, CellStateStyle, EllipseShape, Geometry, RhombusShape } from "@maxgraph/core";
+import { CellState, EllipseShape, Geometry } from "@maxgraph/core";
 import CustomShapeInterface from "./CustomShapeInterface";
 import EllipseGeometryClass from "./geometry/EllipseGeometryClass";
 

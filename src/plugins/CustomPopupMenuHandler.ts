@@ -1,4 +1,4 @@
-import { Cell, Graph, PopupMenuHandler, PopupMenuItem } from "@maxgraph/core";
+import { Cell, Graph, PopupMenuHandler } from "@maxgraph/core";
 import SquareGeometryClass from "../shapes/geometry/SquareGeometryClass";
 
 export default class CustomPopupMenuHandler extends PopupMenuHandler {

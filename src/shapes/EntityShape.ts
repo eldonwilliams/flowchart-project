@@ -1,4 +1,4 @@
-import { CellState, Geometry, Rectangle, RectangleShape } from "@maxgraph/core";
+import { CellState, Geometry, RectangleShape } from "@maxgraph/core";
 import CustomShapeInterface from "./CustomShapeInterface";
 import SquareGeometryClass from "./geometry/SquareGeometryClass";
 

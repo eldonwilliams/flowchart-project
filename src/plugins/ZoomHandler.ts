@@ -1,5 +1,4 @@
-import { GraphPlugin, InternalEvent } from "@maxgraph/core";
-import { Graph } from "@maxgraph/core/dist/view/Graph";
+import { Graph, GraphPlugin, InternalEvent } from "@maxgraph/core";
 
 /**
  * This plugin handles zooming in/out of the graph using the "wheel" event.
