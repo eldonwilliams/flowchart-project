@@ -70,6 +70,23 @@ table.mxPopupMenu tr {
   font-size: 4pt;
 }
 
+input {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+
+#properties-mananger form {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: min-content;
+}
+
+label {
+  margin-right: 5px;
+}
+
 @layer utilities {
 
   /* Hide scrollbar for Chrome, Safari and Opera */
