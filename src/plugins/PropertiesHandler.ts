@@ -1,4 +1,4 @@
-import { Cell, EventObject, Graph, GraphPlugin, InternalEvent, SelectionCellsHandler } from "@maxgraph/core";
+import { Cell, EventObject, Geometry, Graph, GraphPlugin, InternalEvent, SelectionCellsHandler } from "@maxgraph/core";
 
 enum PROPERTY_TYPE {
     NUMBER,
@@ -26,28 +26,77 @@ export default class PropertiesHandler implements GraphPlugin {
 
         if (selectedCell == null) return;
 
+        this.resetProperties();
+
+        const handleRemoval = (_, event: EventObject) => {
+            console.log("hi")
+            event.getProperty("cells").forEach((cell: Cell) => {
+                if (cell == selectedCell) {
+                    this.resetProperties();
+                }
+            });
+        };
+
+        this.graph.addListener(InternalEvent.CELLS_REMOVED, handleRemoval)
+        this.propertyDrawerCleanupFunctions.push(() => {
+            this.graph.removeListener(handleRemoval);
+        });
+
         if (selectedCell.vertex) {
             this.handleClickOnVertex(selectedCell);
+        }
+
+        if (selectedCell.edge) {
+            this.handleClickOnEdge(selectedCell);
         }
     }
 
     private handleClickOnVertex(vertex: Cell) {
-        this.resetProperties();
-
-        this.graph.addListener(InternalEvent.CELLS_REMOVED, (_, event: EventObject) => {
-            event.getProperty("cells").forEach((cell: Cell) => {
-                if (cell == vertex) {
-                    this.resetProperties();
-                }
-            });
-        });
-
-        this.addProperty("Label", vertex.value, PROPERTY_TYPE.STRING, ((event) => {
+        const doUpdate = (fn: Function, updateEdges: boolean = false) => {
             this.graph.batchUpdate(() => {
-                vertex.setValue(event.value);
+                fn();
             });
             this.graph.refresh(vertex);
-        }).bind(this));
+            if (updateEdges) {
+                this.graph.getEdges(vertex).forEach(edge => {
+                    this.graph.refresh(edge);
+                });
+            }
+        }
+
+        const handleLabelChange = (input: HTMLInputElement) => doUpdate(() => {
+            vertex.setValue(input.value);
+        });
+
+        const handleGeometryChange = (geometry: keyof Geometry, input: HTMLInputElement) => doUpdate(() => {
+            // @ts-ignore shutup
+            vertex.geometry[geometry] = Number(input.value);
+        }, true);
+
+        this.addProperty("Label", vertex.value, PROPERTY_TYPE.STRING, handleLabelChange);
+        this.addProperty("X", vertex.geometry.x, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'x'));
+        this.addProperty("Y", vertex.geometry.y, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'y'));
+        this.addProperty("Width", vertex.geometry.width, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'width'));
+        this.addProperty("Height", vertex.geometry.height, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'height'));
+    }
+
+    private handleClickOnEdge(edge: Cell) {
+        const handleLabelChange = (input: HTMLInputElement) => {
+            this.graph.batchUpdate(() => {
+                edge.setValue(input.value);
+            });
+            this.graph.refresh(edge);
+        }
+
+        this.addProperty("Label", edge.value, PROPERTY_TYPE.STRING, handleLabelChange);
+    }
+
+    /**
+     * Starts a horizontal group in the drawer
+     * @param name 
+     */
+    private startGroup(name: string = "") {
+        
     }
 
     /**
