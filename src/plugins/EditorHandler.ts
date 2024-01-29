@@ -23,6 +23,13 @@ export default class EditorHandler implements GraphPlugin {
      * @param event 
      */
     private handleKeydown(event: KeyboardEvent) {
+        const activeElement = document.activeElement;
+        const isTextInput = activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement;
+
+        if (isTextInput) {
+            return;
+        }
+
         switch (event.key) {
             case "Delete":
             case "Backspace":
