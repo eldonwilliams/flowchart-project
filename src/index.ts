@@ -1,6 +1,6 @@
 import "@maxgraph/core";
 import CustomGraph from "./CustomGraph";
-import { Client, InternalEvent } from "@maxgraph/core";
+import { Cell, Client, InternalEvent } from "@maxgraph/core";
 import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
 import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
 
