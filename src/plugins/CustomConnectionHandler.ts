@@ -6,9 +6,7 @@ export default class CustomConnectionHandler extends ConnectionHandler {
 
     // Make preview orthogonal
     createEdgeState(me?: InternalMouseEvent): CellState {
-        var edge = this.graph.createEdge(null, null, null, null, null, {
-            edgeStyle: EDGESTYLE.ENTITY_RELATION,
-        });
+        var edge = this.graph.createEdge(null, null, null, null, null, {});
 
         return new CellState(this.graph.view, edge, this.graph.getCellStyle(edge));
     }

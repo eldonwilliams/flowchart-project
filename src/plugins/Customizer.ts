@@ -1,11 +1,10 @@
 import { Graph, GraphPlugin, PanningHandler } from "@maxgraph/core";
-import { EDGESTYLE } from "@maxgraph/core/dist/util/Constants";
 
 export default class Customizer implements GraphPlugin {
     static pluginId = "CustomizerPlugin";
 
     constructor (graph: Graph) {
-        graph.getStylesheet().getDefaultEdgeStyle().edgeStyle = EDGESTYLE.ENTITY_RELATION;
+        graph.getStylesheet().getDefaultEdgeStyle().endArrow = "none";
 
         graph.setAllowLoops(false);
         graph.setAllowNegativeCoordinates(true);
