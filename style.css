@@ -70,10 +70,11 @@ table.mxPopupMenu tr {
   font-size: 4pt;
 }
 
-input {
-  border: 1px solid black;
+input, select {
+  border: 1px solid gray;
   border-radius: 5px;
   padding: 2px 5px;
+  width: 100%;
 }
 
 #properties-mananger form {
@@ -81,6 +82,7 @@ input {
   flex-direction: column;
   flex-wrap: wrap;
   width: min-content;
+  gap: 5px;
 }
 
 label {
