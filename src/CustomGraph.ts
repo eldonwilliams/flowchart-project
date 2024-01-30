@@ -1,4 +1,4 @@
-import { CellRenderer, GraphPluginConstructor, InternalEvent, RubberBandHandler, CellState, Graph } from "@maxgraph/core";
+import { CellRenderer, GraphPluginConstructor, InternalEvent, RubberBandHandler, CellState, Graph, Cell } from "@maxgraph/core";
 import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
 import CustomConnectionHandler from "./plugins/CustomConnectionHandler";
 import CustomCellRenderer from "./plugins/CustomCellRenderer";
@@ -27,6 +27,13 @@ export default class CustomGraph extends Graph {
 
     createCellRenderer(): CellRenderer {
         return new CustomCellRenderer();
+    }
+
+    getLabel: (cell: Cell) => string = (cell: Cell) =>{
+        if (typeof cell.value === "string") {
+            return cell.value;
+        }
+        return cell.value?.label;
     }
 
     // copied from a story book example, this allows constraints to work
