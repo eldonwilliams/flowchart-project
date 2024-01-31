@@ -1,11 +1,13 @@
 import { Cell, EventObject, Geometry, Graph, GraphPlugin, InternalEvent } from "@maxgraph/core";
 import { ARROW } from "@maxgraph/core/dist/util/Constants";
+import { getCellValue, setCellValue } from "../util/CellUtil";
 
 enum PROPERTY_TYPE {
     NUMBER,
     STRING,
     JOIN_SELECTION,
     BREAK,
+    CHECKBOX
 }
 
 type PropertyStyle = {
@@ -22,6 +24,13 @@ const EdgeConnectionStyles = [
     ARROW.DIAMOND,
     ARROW.OVAL,
 ];
+
+const DoubleShapes = [
+    "ellipse",
+    "rectangle",
+    "doubleEllipse",
+    "doubleRectangle",
+]
 
 export default class PropertiesHandler implements GraphPlugin {
     static pluginId = "PropertiesHandlerPlugin";
@@ -50,6 +59,13 @@ export default class PropertiesHandler implements GraphPlugin {
         this.graph = graph;
 
         graph.addListener(InternalEvent.CLICK, this.handleSelectEvent.bind(this));
+        graph.addListener(InternalEvent.DOUBLE_CLICK, this.closeOnDBLClick.bind(this));
+    }
+
+    private closeOnDBLClick(_, event: EventObject) {
+        if (event.getProperty("cell") == null) {
+            this.resetProperties();
+        }
     }
 
     private handleSelectEvent() {
@@ -60,7 +76,6 @@ export default class PropertiesHandler implements GraphPlugin {
         this.resetProperties();
 
         const handleRemoval = (_, event: EventObject) => {
-            console.log("hi")
             event.getProperty("cells").forEach((cell: Cell) => {
                 if (cell == selectedCell) {
                     this.resetProperties();
@@ -104,7 +119,7 @@ export default class PropertiesHandler implements GraphPlugin {
             vertex.geometry[geometry] = Number(input.value);
         }, true);
 
-        this.addProperty(vertex.value.label, PROPERTY_TYPE.STRING, handleLabelChange, { label: "Label", width: "150px", });
+        this.addProperty(getCellValue(vertex, "label"), PROPERTY_TYPE.STRING, handleLabelChange, { label: "Label", width: "150px", });
         this.startGroup("Geometry - Position");
         this.addProperty(vertex.geometry.x, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'x'), { label: "X", width: "75px", });
         this.addProperty(vertex.geometry.y, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'y'), { label: "Y", width: "75px", });
@@ -113,12 +128,17 @@ export default class PropertiesHandler implements GraphPlugin {
         this.addProperty(vertex.geometry.width, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'width'), { label: "Width", width: "75px", });
         this.addProperty(vertex.geometry.height, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'height'), { label: "Height", width: "75px", });
         this.endGroup();
+        this.startGroup();
+        this.addProperty(getCellValue(vertex, "doubleShape"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+            setCellValue(vertex, "doubleShape", input.checked);
+        }), { label: "Is Root", width: "150px", });
+        this.endGroup();
     }
 
     private handleClickOnEdge(edge: Cell) {
         const handleLabelChange = (input: HTMLInputElement) => {
             this.graph.batchUpdate(() => {
-                edge.setValue(input.value);
+                setCellValue(edge, "label", input.value);
             });
             this.graph.refresh(edge);
         }
@@ -131,12 +151,11 @@ export default class PropertiesHandler implements GraphPlugin {
             this.graph.refresh(edge);
         }
 
-        this.addProperty(edge.value, PROPERTY_TYPE.STRING, handleLabelChange, {
+        this.addProperty(getCellValue(edge, "label"), PROPERTY_TYPE.STRING, handleLabelChange, {
             label: "Label",
             width: "150px",
         });
 
-        console.log(edge.style);
         this.addProperty(edge.style.startArrow, PROPERTY_TYPE.JOIN_SELECTION, styleChange.bind(this, 'startArrow'), {
             label: "Start Arrow",
             width: "150px",
@@ -170,6 +189,7 @@ export default class PropertiesHandler implements GraphPlugin {
      * Adds a property to the drawer
      */
     private addProperty(value: any, type: PROPERTY_TYPE, handleChange: Function, { label, width, }: PropertyStyle = { label: "", width: "w-full" }) {
+        PropertiesHandler.PROPERTY_ELEMENT.parentElement.classList.remove('hidden');
         let input: HTMLInputElement | HTMLSelectElement;
 
         let parent = this.currentParent;
@@ -236,6 +256,20 @@ export default class PropertiesHandler implements GraphPlugin {
 
                 input = select;
                 break;
+            case PROPERTY_TYPE.CHECKBOX:
+                const d = document.createElement('label');
+                d.htmlFor = label;
+                d.innerText = label;
+
+                input = document.createElement('input');
+                input.type = "checkbox";
+                input.checked = value;
+                input.id = label;
+                input.name = label;
+
+                parent.appendChild(d);
+                parent.appendChild(input);
+                break;
         }
 
         input.style.width = width;
@@ -256,10 +290,12 @@ export default class PropertiesHandler implements GraphPlugin {
     private resetProperties() {
         this.propertyDrawerCleanupFunctions.forEach(clean => clean());
         Array.from(PropertiesHandler.PROPERTY_ELEMENT.children).forEach(child => child.remove());
+        PropertiesHandler.PROPERTY_ELEMENT.parentElement.classList.add('hidden');
     }
 
     onDestroy() {
         this.graph.removeListener(this.handleSelectEvent);
+        this.graph.removeListener(this.closeOnDBLClick);
     }
 
 }

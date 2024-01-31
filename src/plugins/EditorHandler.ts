@@ -1,4 +1,4 @@
-import { Graph, GraphPlugin } from "@maxgraph/core";
+import { EventObject, Graph, GraphPlugin, InternalEvent } from "@maxgraph/core";
 
 export default class EditorHandler implements GraphPlugin {
     static pluginId = "EditorHandlerPlugin";
@@ -16,6 +16,14 @@ export default class EditorHandler implements GraphPlugin {
     constructor(graph: Graph) {
         this.graph = graph;
         addEventListener("keydown", this.handleKeydown.bind(this));
+        this.graph.addListener(InternalEvent.DOUBLE_CLICK, this.handleDoubleClick.bind(this));
+    }
+
+    private handleDoubleClick(_, event: EventObject) {
+        const cell = event.getProperty("cell");
+        if (cell) {
+            this.graph.startEditingAtCell(cell);
+        }
     }
 
     /**
