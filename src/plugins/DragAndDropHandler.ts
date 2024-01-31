@@ -1,5 +1,5 @@
 import { Cell, CellRenderer, Geometry, Graph, GraphPlugin, Shape, gestureUtils } from "@maxgraph/core";
-import { getDisplayName } from "../shapes/ShapeUtil";
+import { getDisplayName } from "../util/ShapeUtil";
 
 const DEFAULT_HEIGHT_WIDTH = 25;
 

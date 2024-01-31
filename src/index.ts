@@ -45,7 +45,7 @@ graph.batchUpdate(() => {
         style: {
             shape: "rectangle",
             arcSize: 10, // rounded corners
-            
+            editable: true,
         },
         geometryClass: SquareGeometryClass,
         value: "Dept"

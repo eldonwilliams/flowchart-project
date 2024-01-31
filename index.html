@@ -9,16 +9,16 @@
 <body>
     <div class="p-2 w-full h-full">
         <div class="flex flex-row gap-2 w-full h-full border-stone-500">
-            <div class="p-2 border basis-36 overflow-x-scroll no-scrollbar flex-row justify-center">
-                <p>Toolbox</p>
+            <div class="p-2 border basis-36 overflow-x-scroll no-scrollbar flex flex-col content-center">
+                <p class="font-bold text-center">Toolbox</p>
                 <div id="toolbox" class="flex flex-row justify-center flex-wrap gap-2 mt-2">
                 </div>
             </div>
             <div class="flex flex-col h-full flex-1 border overflow-hidden">
                 <div id="graph-container" class="h-full w-full touch-pan-x touch-pan-y"></div>
             </div>
-            <div id="properties-mananger" class="p-2 border">
-                <p>Properties</p>
+            <div id="properties-mananger" class="p-2 border hidden">
+                <p class="font-bold text-center mb-2">Properties</p>
                 <form autocomplete="off" autocapitalize="off"></form>
             </div>
         </div>
