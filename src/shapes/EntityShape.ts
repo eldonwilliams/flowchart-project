@@ -9,6 +9,9 @@ export default class EntityShape extends RectangleShape implements CustomShapeIn
     
     static geometryClass: typeof Geometry = SquareGeometryClass;
 
+    static doubleShape: string = "DoubleEntity";
+    static isDoubleShape: boolean = false;
+
     static defaultCellState: Partial<CellState> = {
         width: 60,
         height: 50,
