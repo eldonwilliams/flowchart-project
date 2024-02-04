@@ -45,7 +45,6 @@ graph.batchUpdate(() => {
         style: {
             shape: "rectangle",
             arcSize: 10, // rounded corners
-            editable: true,
         },
         geometryClass: SquareGeometryClass,
         value: "Dept"
@@ -55,9 +54,6 @@ graph.batchUpdate(() => {
         parent,
         source: v1,
         target: v3,
-        style: {
-            editable: false,
-        }
     });
 });
 
