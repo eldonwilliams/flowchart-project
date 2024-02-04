@@ -9,6 +9,10 @@ export default class AttributeShape extends EllipseShape implements CustomShapeI
 
     static geometryClass: typeof Geometry = EllipseGeometryClass;
 
+    static doubleShape: string = "DoubleAttribute";
+    
+    static isDoubleShape: boolean = false;
+
     static defaultCellState: Partial<CellState> = {
         width: 70,
         height: 40
