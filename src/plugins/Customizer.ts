@@ -10,8 +10,9 @@ export default class Customizer implements GraphPlugin {
         graph.setAllowNegativeCoordinates(true);
         graph.setAllowDanglingEdges(false);
         graph.setConnectable(true);
-        graph.setCellsEditable(true);
+        graph.setCellsEditable(false); // editing cells is handled by properties panel
         graph.setPanning(true);
+        // graph.setHtmlLabels(true); disabled until I find a way to sanitize HTML, Markdown?
         graph.gridEnabled = true;
         graph.gridSize = 5;
 
