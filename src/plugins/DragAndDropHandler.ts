@@ -97,10 +97,7 @@ export default class DragAndDropHandler implements GraphPlugin {
         gestureUtils.makeDraggable(
             dragSource,
             this.graph,
-            this.dropElementHandler.bind(this, shapeClass),
-            null,
-            -10,
-            -10,
+            this.dropElementHandler.bind(this, shapeClass)
         );
     }
 
