@@ -132,8 +132,6 @@ export default class PropertiesHandler implements GraphPlugin {
         this.addProperty(vertex.geometry.width, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'width'), { label: "Width", width: "75px", });
         this.addProperty(vertex.geometry.height, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'height'), { label: "Height", width: "75px", });
         this.endGroup();
-
-        this.startGroup();
         
         if (Object.prototype.hasOwnProperty.call(shapeClass, 'isDoubleShape')) {
             // @ts-ignore
@@ -150,7 +148,16 @@ export default class PropertiesHandler implements GraphPlugin {
                 this.handleClickOnVertex(vertex); // re-render the properties
             }), { label: "Double Border", width: "150px", });
         }
-        this.endGroup();
+
+        this.addProperty(vertex.style.dashed, PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+            vertex.style.dashed = input.checked;
+        }), { label: "Dashed", width: "150px", });
+
+
+        this.addProperty(getCellValue(vertex, "underlined"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+            setCellValue(vertex, "underlined", input.checked);
+        }), { label: "Underlined", width: "150px", });
+        // this.endGroup();
     }
 
     private handleClickOnEdge(edge: Cell) {
