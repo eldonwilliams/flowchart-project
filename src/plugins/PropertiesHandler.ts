@@ -113,7 +113,7 @@ export default class PropertiesHandler implements GraphPlugin {
         }
 
         const handleLabelChange = (input: HTMLInputElement) => doUpdate(() => {
-            vertex.setValue(input.value);
+            setCellValue(vertex, "label", input.value);
         });
 
         const handleGeometryChange = (geometry: keyof Geometry, input: HTMLInputElement) => doUpdate(() => {
