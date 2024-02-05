@@ -12,7 +12,7 @@ export default class Customizer implements GraphPlugin {
         graph.setConnectable(true);
         graph.setCellsEditable(false); // editing cells is handled by properties panel
         graph.setPanning(true);
-        // graph.setHtmlLabels(true); disabled until I find a way to sanitize HTML, Markdown?
+        graph.setHtmlLabels(true);
         graph.gridEnabled = true;
         graph.gridSize = 5;
 
