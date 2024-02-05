@@ -31,6 +31,9 @@ export default class CustomGraph extends Graph {
     }
 
     getLabel: (cell: Cell) => string = (cell: Cell) =>{
+        if (getCellValue(cell, "underlined")) {
+            return `<u>${getCellValue(cell, "label")}</u>`;
+        }
         return getCellValue(cell, "label");
     }
 
