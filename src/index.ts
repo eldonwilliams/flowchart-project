@@ -50,6 +50,15 @@ graph.batchUpdate(() => {
         value: "Dept"
     });
 
+    // graph.insertVertex({
+    //     parent,
+    //     size: [200, 200],
+    //     position: [100, 50],
+    //     style: {
+    //         shape: "swimlane",
+    //     }
+    // })
+
     graph.insertEdge({
         parent,
         source: v1,

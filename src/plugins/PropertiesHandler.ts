@@ -98,6 +98,8 @@ export default class PropertiesHandler implements GraphPlugin {
     }
 
     private handleClickOnVertex(vertex: Cell) {
+        const shapeClass = this.graph.cellRenderer.getShape(vertex.style.shape);
+
         const doUpdate = (fn: Function, updateEdges: boolean = false) => {
             this.graph.batchUpdate(() => {
                 fn();
@@ -120,18 +122,34 @@ export default class PropertiesHandler implements GraphPlugin {
         }, true);
 
         this.addProperty(getCellValue(vertex, "label"), PROPERTY_TYPE.STRING, handleLabelChange, { label: "Label", width: "150px", });
+        
         this.startGroup("Geometry - Position");
         this.addProperty(vertex.geometry.x, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'x'), { label: "X", width: "75px", });
         this.addProperty(vertex.geometry.y, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'y'), { label: "Y", width: "75px", });
         this.endGroup();
+
         this.startGroup("Geometry - Size")
         this.addProperty(vertex.geometry.width, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'width'), { label: "Width", width: "75px", });
         this.addProperty(vertex.geometry.height, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'height'), { label: "Height", width: "75px", });
         this.endGroup();
+
         this.startGroup();
-        this.addProperty(getCellValue(vertex, "doubleShape"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
-            setCellValue(vertex, "doubleShape", input.checked);
-        }), { label: "Is Root", width: "150px", });
+        
+        if (Object.prototype.hasOwnProperty.call(shapeClass, 'isDoubleShape')) {
+            // @ts-ignore
+            this.addProperty(shapeClass.isDoubleShape, PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+                // @ts-ignore
+                if (shapeClass.isDoubleShape) {
+                    // @ts-ignore
+                    vertex.style.shape = shapeClass.nonDoubleShape;
+                } else {
+                    // @ts-ignore
+                    vertex.style.shape = shapeClass.doubleShape;
+                }
+                this.resetProperties();
+                this.handleClickOnVertex(vertex); // re-render the properties
+            }), { label: "Double Border", width: "150px", });
+        }
         this.endGroup();
     }
 
@@ -245,6 +263,19 @@ export default class PropertiesHandler implements GraphPlugin {
                 EdgeConnectionStyles.forEach(style => {
                     const option = document.createElement('option');
                     option.value = style;
+                    // const previewGraph = new Graph(option);
+                    // previewGraph.setCellsEditable(false);
+                    // previewGraph.setCellsSelectable(false);
+                    // previewGraph.batchUpdate(() => {
+                    //     previewGraph.insertEdge({
+                    //         parent: previewGraph.getDefaultParent(),
+                    //         style: {
+                    //             endArrow: style,
+                    //         },
+                    //         source: previewGraph.insertVertex(previewGraph.getDefaultParent(), null, "", 0, 0, 0, 0),
+                    //         target: previewGraph.insertVertex(previewGraph.getDefaultParent(), null, "", 30, 0, 0, 0),
+                    //     });
+                    // });
                     option.innerText = style;
                     select.appendChild(option);
                 });

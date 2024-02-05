@@ -9,6 +9,10 @@ export default class RelationShape extends RhombusShape implements CustomShapeIn
 
     static geometryClass: typeof Geometry = EllipseGeometryClass;
 
+    static isDoubleShape: boolean = false;
+
+    static doubleShape: string = "DoubleRelation"
+
     static defaultCellState: Partial<CellState> = {
         width: 70,
         height: 50
