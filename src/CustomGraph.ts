@@ -37,6 +37,8 @@ export default class CustomGraph extends Graph {
         return getCellValue(cell, "label");
     }
 
+    // TODO: Remove Editing
+
     // copied from a story book example, this allows constraints to work
     getAllConnectionConstraints = (terminal: CellState, source: boolean) => {
         if (terminal && terminal.cell) {
