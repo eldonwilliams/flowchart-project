@@ -21,7 +21,7 @@ export function serializeVertex(cell: Cell): string {
             width: cell.geometry?.width,
             height: cell.geometry?.height,
         },
-        children: cell.children.filter((cell) => cell.isVertex).map(serializeVertex), // a little bit of recursion :)
+        children: cell.children.filter((cell) => cell.isVertex()).map(serializeVertex), // a little bit of recursion :)
     });
 }
 
