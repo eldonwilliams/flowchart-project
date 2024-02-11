@@ -3,6 +3,7 @@ import CustomGraph from "./CustomGraph";
 import { Cell, Client, InternalEvent } from "@maxgraph/core";
 import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
 import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
+import { deserializeGraph, serializeGraph } from "./util/Serialization";
 
 Client.setImageBasePath("/images")
 
@@ -11,58 +12,22 @@ InternalEvent.disableContextMenu(container);
 
 const graph = new CustomGraph(container);
 
-const parent = graph.getDefaultParent();
+const topbar = document.getElementById("topbar");
 
-let v1;
+let saveData = "";
 
-graph.batchUpdate(() => {
-    v1 = graph.insertVertex({
-        parent,
-        size: [80, 30],
-        position: [20, 20],
-        style: {
-            shape: "doubleEllipse",
-        },
-        geometryClass: EllipseGeometryClass,
-        value: "locations"
-    });
+const saveButton = document.createElement("button");
+saveButton.innerText = "Save";
+saveButton.onclick = () => {
+    saveData = serializeGraph(graph);
+}
 
-    const v2 = graph.insertVertex({
-        parent,
-        size: [80, 30],
-        position: [120, 20],
-        style: {
-            shape: "ellipse",
-        },
-        geometryClass: EllipseGeometryClass,
-        value: "persons"
-    });
+const loadButton = document.createElement("button");
+loadButton.innerText = "Load";
+loadButton.onclick = () => {
+    if (saveData === "") return;
+    deserializeGraph(graph, saveData);
+}
 
-    const v3 = graph.insertVertex({
-        parent,
-        size: [80, 30],
-        position: [60, 100],
-        style: {
-            shape: "rectangle",
-            arcSize: 10, // rounded corners
-        },
-        geometryClass: SquareGeometryClass,
-        value: "Dept"
-    });
-
-    // graph.insertVertex({
-    //     parent,
-    //     size: [200, 200],
-    //     position: [100, 50],
-    //     style: {
-    //         shape: "swimlane",
-    //     }
-    // })
-
-    graph.insertEdge({
-        parent,
-        source: v1,
-        target: v3,
-    });
-});
-
+topbar.appendChild(saveButton);
+topbar.appendChild(loadButton);
