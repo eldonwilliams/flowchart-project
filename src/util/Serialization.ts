@@ -29,7 +29,6 @@ export function serializeVertex(cell: Cell): string {
  * Serialize an edge to a string
  */
 export function serializeEdge(edge: Cell): string {
-    console.log("Serializing Edge: ", edge);
     return JSON.stringify({
         cellId: edge.id,
         style: edge.style,
@@ -75,7 +74,6 @@ export function deserializeVertex(graph: Graph, serializedCell: string): Cell {
  * Deserialize an edge from a string
  */
 export function deserializeEdge(graph: Graph, serializedEdge: string): Cell {
-    console.log(serializedEdge)
     const edgeData = JSON.parse(serializedEdge);
     const edge = graph.insertEdge({
         id: edgeData.cellId,
@@ -85,7 +83,6 @@ export function deserializeEdge(graph: Graph, serializedEdge: string): Cell {
         style: edgeData.style,
         value: edgeData.value,
     });
-    console.log(edge);
     return edge;
 }
 

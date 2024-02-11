@@ -48,7 +48,6 @@ fileInput.onchange = (event) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const contents = e.target.result as string;
-            console.log(contents)
             deserializeGraph(graph, contents);
         }
         reader.readAsText(file);
