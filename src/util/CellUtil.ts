@@ -8,6 +8,13 @@ export function getCellValue(cell: Cell, key: string): any {
     return cell.value[key];
 }
 
+export function getCellValueRoot(cell: Cell): any {
+    if (typeof cell.value === "string" || cell.value === null) {
+        cell.setValue({ label: cell.value });
+    }
+    return cell.value;
+}
+
 export function setCellValue(cell: Cell, key: string, value: any) {
     if (typeof cell.value === "string" || cell.value === null) {
         cell.setValue({ label: cell.value });
