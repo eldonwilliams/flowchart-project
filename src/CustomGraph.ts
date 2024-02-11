@@ -24,6 +24,34 @@ export default class CustomGraph extends Graph {
         defaultPluginsMap[PropertiesHandler.pluginId] = PropertiesHandler;
 
         super(container, null, Object.values(defaultPluginsMap));
+
+        // This is super hacky
+        // An edge must first be inserted to the graph before
+        // Serialized edges can be inserted
+        // I don't know why this is the case
+        // Probably a bug in maxgraph, one of many
+        this.batchUpdate(() => {
+            const a = this.insertVertex({
+                parent: this.getDefaultParent(),
+                x:0,
+                y:0,
+                width:0,
+                height:0,
+            });
+            const b = this.insertVertex({
+                parent: this.getDefaultParent(),
+                x:1,
+                y:1,
+                width:0,
+                height:0,
+            });
+            const c = this.insertEdge({
+                source: a,
+                target: b,
+            });
+        });
+
+        this.removeCells(this.getChildCells(this.getDefaultParent(), true, true));
     }
 
     createCellRenderer(): CellRenderer {
