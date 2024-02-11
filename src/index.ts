@@ -42,8 +42,12 @@ saveFileButton.onclick = () => {
 
 const fileInput = document.createElement("input");
 fileInput.type = "file";
-fileInput.onchange = (event) => {
+fileInput.accept = ".dat";
+fileInput.innerText = "Load File";
+fileInput.id = "file-input";
+fileInput.oninput = (event) => {
     const file = (event.target as HTMLInputElement).files[0];
+    (event.target as HTMLInputElement).value = "";
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -54,9 +58,14 @@ fileInput.onchange = (event) => {
     }
 }
 
+const fileLabel = document.createElement("button");
+fileLabel.innerHTML = "<label for='file-input'>Load File</label>";
+
 topbar.appendChild(saveButton);
 topbar.appendChild(loadButton);
+topbar.appendChild(document.createElement("br"));
 topbar.appendChild(saveFileButton);
+topbar.appendChild(fileLabel);
 topbar.appendChild(fileInput);
 
 // @ts-ignore

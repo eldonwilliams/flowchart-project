@@ -28,6 +28,10 @@ button {
 
 }
 
+input[type="file"] {
+  display: none;
+}
+
 button:hover {
   background: #e7e7e7;
 }
