@@ -3,6 +3,7 @@ import CustomGraph from "./CustomGraph";
 import { Cell, Client, InternalEvent } from "@maxgraph/core";
 import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
 import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
+import { deserializeGraph, serializeGraph } from "./util/Serialization";
 
 Client.setImageBasePath("/images")
 
@@ -11,58 +12,61 @@ InternalEvent.disableContextMenu(container);
 
 const graph = new CustomGraph(container);
 
-const parent = graph.getDefaultParent();
+const topbar = document.getElementById("topbar");
 
-let v1;
+let saveData = "";
 
-graph.batchUpdate(() => {
-    v1 = graph.insertVertex({
-        parent,
-        size: [80, 30],
-        position: [20, 20],
-        style: {
-            shape: "doubleEllipse",
-        },
-        geometryClass: EllipseGeometryClass,
-        value: "locations"
-    });
+const saveButton = document.createElement("button");
+saveButton.innerText = "Save";
+saveButton.onclick = () => {
+    saveData = serializeGraph(graph);
+}
 
-    const v2 = graph.insertVertex({
-        parent,
-        size: [80, 30],
-        position: [120, 20],
-        style: {
-            shape: "ellipse",
-        },
-        geometryClass: EllipseGeometryClass,
-        value: "persons"
-    });
+const loadButton = document.createElement("button");
+loadButton.innerText = "Load";
+loadButton.onclick = () => {
+    if (saveData === "") return;
+    deserializeGraph(graph, saveData);
+}
 
-    const v3 = graph.insertVertex({
-        parent,
-        size: [80, 30],
-        position: [60, 100],
-        style: {
-            shape: "rectangle",
-            arcSize: 10, // rounded corners
-        },
-        geometryClass: SquareGeometryClass,
-        value: "Dept"
-    });
+const saveFileButton = document.createElement("button");
+saveFileButton.innerText = "Save File";
+saveFileButton.onclick = () => {
+    if (saveData === "") return;
+    const blob = new Blob([saveData], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "graph.dat";
+    a.click();
+}
 
-    // graph.insertVertex({
-    //     parent,
-    //     size: [200, 200],
-    //     position: [100, 50],
-    //     style: {
-    //         shape: "swimlane",
-    //     }
-    // })
+const fileInput = document.createElement("input");
+fileInput.type = "file";
+fileInput.accept = ".dat";
+fileInput.innerText = "Load File";
+fileInput.id = "file-input";
+fileInput.oninput = (event) => {
+    const file = (event.target as HTMLInputElement).files[0];
+    (event.target as HTMLInputElement).value = "";
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const contents = e.target.result as string;
+            deserializeGraph(graph, contents);
+        }
+        reader.readAsText(file);
+    }
+}
 
-    graph.insertEdge({
-        parent,
-        source: v1,
-        target: v3,
-    });
-});
+const fileLabel = document.createElement("button");
+fileLabel.innerHTML = "<label for='file-input'>Load File</label>";
 
+topbar.appendChild(saveButton);
+topbar.appendChild(loadButton);
+topbar.appendChild(document.createElement("br"));
+topbar.appendChild(saveFileButton);
+topbar.appendChild(fileLabel);
+topbar.appendChild(fileInput);
+
+// @ts-ignore
+window.graph = graph;
