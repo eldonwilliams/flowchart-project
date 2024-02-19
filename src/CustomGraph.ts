@@ -25,6 +25,8 @@ export default class CustomGraph extends Graph {
 
         super(container, null, Object.values(defaultPluginsMap));
 
+        this.getDataModel().createId = () => Math.random().toString().slice(2);
+
         // This is super hacky
         // An edge must first be inserted to the graph before
         // Serialized edges can be inserted
