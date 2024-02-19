@@ -26,6 +26,14 @@
             </div>
         </div>
     </div>
+    <div id="hider" class="hidden absolute top-0 left-0 w-[100vw] h-[100vh] backdrop-blur z-10"></div>
+    <div class="hidden px-3 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full h-full max-w-[600px] max-h-[500px] z-20">
+        <div id="server-items" class="p-4 flex-wrap rounded-sm w-full h-full border border-stone-500 bg-white flex flex-row
+        *:rounded-sm *:border *:border-stone-500 *:px-2 *:text-center content-start gap-2">
+            <!-- server discovery -->
+        </div>
+        <div class="loader absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"></div>
+    </div>
     <script src="./src/index.ts" type="module"></script>
 </body>
 </html>
