@@ -4,10 +4,7 @@ import { readdir, readFile } from "fs";
 
 const app = express();
 
-app.use(cors({
-    origin: ["http://localhost:5173", "https://flowchart.eldon.dev"],
-    methods: "GET,POST,PUT,DELETE",
-}));
+app.use(cors());
 
 const discoveryDirectory = process.env.DISCOVERY_DIRECTORY ?? "./examples";
 
