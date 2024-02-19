@@ -135,3 +135,26 @@ label {
     /* Firefox */
   }
 }
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 80px;
+  aspect-ratio: 1;
+  border: 10px solid #0000;
+  padding: 5px;
+  box-sizing: border-box;
+  background: 
+    radial-gradient(farthest-side,#000f 98%,#fff0 ) 0 0/20px 20px no-repeat,
+    conic-gradient(from 90deg at 10px 10px,#fff0 90deg,#000f 0) content-box,
+    conic-gradient(from -90deg at 40px 40px,#fff0 90deg,#000f 0) content-box,
+    #fff;
+  filter: blur(4px) contrast(10);
+  animation: l11 2s infinite;
+}
+@keyframes l11 {
+  0%   {background-position:0 0}
+  25%  {background-position:100% 0}
+  50%  {background-position:100% 100%}
+  75%  {background-position:0% 100%}
+  100% {background-position:0% 0}
+}

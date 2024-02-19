@@ -4,6 +4,9 @@ import { Cell, Client, InternalEvent } from "@maxgraph/core";
 import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
 import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
 import { deserializeGraph, serializeGraph } from "./util/Serialization";
+import discoverFiles from "./util/ServerDiscovery";
+import { addServerItem, clearServerItems, hideServerDiscoveryMenu, showServerDiscoveryMenu, stopLoadingServerDiscoveryMenu } from "./util/ServerDiscoveryMenu";
+import { url } from "./API_URL";
 
 Client.setImageBasePath("/images")
 
@@ -32,7 +35,7 @@ loadButton.onclick = () => {
 const saveFileButton = document.createElement("button");
 saveFileButton.innerText = "Save File";
 saveFileButton.onclick = () => {
-    if (saveData === "") return;
+    saveData = serializeGraph(graph);
     const blob = new Blob([saveData], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -61,12 +64,34 @@ fileInput.oninput = (event) => {
 const fileLabel = document.createElement("button");
 fileLabel.innerHTML = "<label for='file-input'>Load File</label>";
 
+const serverPickButton = document.createElement("button");
+serverPickButton.innerText = "Load from Server";
+serverPickButton.onclick = async () => {
+    clearServerItems();
+    showServerDiscoveryMenu(true);
+    const files = await discoverFiles();
+
+    files.forEach((file) => addServerItem(file, ()=>{
+        fetch(`${url}/discovery/${file}`)
+            .then((res) => res.text())
+            .then((data) => {
+                deserializeGraph(graph, data);
+                hideServerDiscoveryMenu();
+            });
+    }, false));
+
+    if (files.length === 0) hideServerDiscoveryMenu();
+
+    stopLoadingServerDiscoveryMenu();
+}
+
 topbar.appendChild(saveButton);
 topbar.appendChild(loadButton);
 topbar.appendChild(document.createElement("br"));
 topbar.appendChild(saveFileButton);
 topbar.appendChild(fileLabel);
 topbar.appendChild(fileInput);
+topbar.appendChild(serverPickButton);
 
 // @ts-ignore
 window.graph = graph;
