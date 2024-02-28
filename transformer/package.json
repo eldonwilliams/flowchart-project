@@ -1,0 +1,22 @@
+{
+  "name": "transformer",
+  "version": "1.0.0",
+  "description": "This is effectively the main point of this project.\r This package is a CLI and library which provides the ability to parse, automatically grade, and then submit results to many different providers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm i --global typescript && tsc",
+    "start": "npm run build && node dist/index.js",
+    "cli": "npm run build && node dist/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.21",
+    "@types/yargs": "^17.0.32"
+  }
+}
