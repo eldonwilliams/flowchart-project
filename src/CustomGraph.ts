@@ -25,6 +25,7 @@ export default class CustomGraph extends Graph {
 
         super(container, null, Object.values(defaultPluginsMap));
 
+        // TODO: Append incremented counter
         this.getDataModel().createId = () => Math.random().toString().slice(2);
 
         // This is super hacky
