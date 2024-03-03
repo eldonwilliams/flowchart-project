@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "build-docker": "chmod +x ./build-docker.sh && ./build-docker.sh"
   },
   "keywords": [],
   "author": "",
