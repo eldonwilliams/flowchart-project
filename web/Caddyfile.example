@@ -1,0 +1,16 @@
+# This Caddyfile gives a minimial working version of the project.
+
+:80 {
+    handle_path /images/* {
+        root * /usr/frontend/images
+        file_server
+    }
+    handle /* {
+        root * /usr/frontend/build
+        file_server
+    }
+}
+
+:8797 {
+    reverse_proxy backend:8797
+}
