@@ -1,31 +1,62 @@
-version: '3.1'
+version: '3.7'
 
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    environment:
+      - PROD=${PROD:-false}
+    ports:
+      - "8797:8797"
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app/
+          ignore:
+          - node_modules/
+        - action: rebuild
+          path: ./backend/package.json
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    environment:
+      - PROD=${PROD:-false}
     volumes:
       - frontend_build:/usr/frontend/
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app/
+          ignore:
+          - node_modules/
+        - action: rebuild
+          path: ./frontend/package.json
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
+    environment:
+      - PROD=${PROD:-false}
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
       - frontend
     volumes:
       - frontend_build:/usr/frontend/
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./web/
+          target: /etc/caddy
 
 volumes:
   frontend_build:
-
 
 networks:
   urlnet:
