@@ -5,8 +5,8 @@ COPY . /app
 WORKDIR /app
 
 RUN npm install
-RUN [ "npm", "install", "-g", "typescript" ]
+RUN [ "npm", "install", "-g", "typescript", "nodemon", "ts-node" ]
 
 EXPOSE 8797
 
-CMD [ "npm", "start" ]
+CMD [ "bash", "./docker-start.sh" ]
