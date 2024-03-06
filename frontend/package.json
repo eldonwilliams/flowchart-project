@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "build-docker": "chmod +x ./build-docker.sh && ./build-docker.sh"
+    "docker-dev": "nodemon --exec bash ./build-docker.sh"
   },
   "keywords": [],
   "author": "",

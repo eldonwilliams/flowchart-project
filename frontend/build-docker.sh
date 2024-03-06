@@ -1,6 +1,15 @@
 #!/bin/bash
 
-# Build the frontend then copy it to the appropriate directory
+# This file handles building the frontend
+
+if [ "$PROD" = "true" ]; then
+    export NODE_ENV="production"
+else
+    export NODE_ENV="development"
+fi
+
+echo $NODE_ENV
+echo $PROD
 
 npm run build
 
