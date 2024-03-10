@@ -1,0 +1,4 @@
+# Hide dist files
+
+dist
+node_modules
