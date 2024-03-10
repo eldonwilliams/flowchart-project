@@ -33,8 +33,11 @@ services:
           target: /app/
           ignore:
           - node_modules/
+          - images/
         - action: rebuild
           path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/images
   web:
     build:
       context: ./web
