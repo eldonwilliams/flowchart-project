@@ -20,4 +20,14 @@ export function setCellValue(cell: Cell, key: string, value: any) {
         cell.setValue({ label: cell.value });
     }
     cell.value[key] = value;
+    cell.value["updated"] = Date.now();
+    let w: any = window;
+    if (w.graph) {
+        w.graph.logs.push({
+            time: Date.now(),
+            object: cell.id,
+            value: key,
+            newValue: value,
+        });
+    }
 }

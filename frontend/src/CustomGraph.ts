@@ -1,4 +1,4 @@
-import { CellRenderer, GraphPluginConstructor, CellState, Graph, Cell } from "@maxgraph/core";
+import { CellRenderer, GraphPluginConstructor, CellState, Graph, Cell, CellStyle, Geometry, VertexParameters, InternalEvent } from "@maxgraph/core";
 import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
 import CustomConnectionHandler from "./plugins/CustomConnectionHandler";
 import CustomCellRenderer from "./plugins/CustomCellRenderer";
@@ -8,12 +8,21 @@ import EditorHandler from "./plugins/EditorHandler";
 import DragAndDropHandler from "./plugins/DragAndDropHandler";
 import PropertiesHandler from "./plugins/PropertiesHandler";
 import { defaultPlugins } from "@maxgraph/core/dist/view/Graph";
-import { getCellValue } from "./util/CellUtil";
+import { getCellValue, setCellValue } from "./util/CellUtil";
 
 const defaultPluginsMap: { [key: string]: GraphPluginConstructor } = {};
 defaultPlugins.forEach(p => defaultPluginsMap[p.pluginId] = p);
 
+interface Log {
+    time: number;
+    object: string;
+    value: string;
+    newValue: any;
+}
+
 export default class CustomGraph extends Graph {
+    public logs: Log[] = [];
+
     constructor(container) {
         defaultPluginsMap.PopupMenuHandler = CustomPopupMenuHandler;
         defaultPluginsMap.ConnectionHandler = CustomConnectionHandler;
@@ -25,8 +34,7 @@ export default class CustomGraph extends Graph {
 
         super(container, null, Object.values(defaultPluginsMap));
 
-        // TODO: Append incremented counter
-        this.getDataModel().createId = () => Math.random().toString().slice(2);
+        this.getDataModel().createId = () => this.nextId + "-" + Math.random().toString().slice(2);
 
         // This is super hacky
         // An edge must first be inserted to the graph before
@@ -55,6 +63,18 @@ export default class CustomGraph extends Graph {
         });
 
         this.removeCells(this.getChildCells(this.getDefaultParent(), true, true));
+
+        this.addListener(InternalEvent.CELLS_ADDED, (sender, evt) => {
+            evt.getProperty("cells").forEach(cell => {
+                setCellValue(cell, "created", Date.now());
+            });
+        })
+    }
+    
+    private lastId = 0;
+
+    public get nextId() : string {
+        return this.lastId++ + "";
     }
 
     createCellRenderer(): CellRenderer {
@@ -68,7 +88,7 @@ export default class CustomGraph extends Graph {
         return getCellValue(cell, "label");
     }
 
-    // TODO: Remove Editing
+    startEditing: () => {};
 
     // copied from a story book example, this allows constraints to work
     getAllConnectionConstraints = (terminal: CellState, source: boolean) => {

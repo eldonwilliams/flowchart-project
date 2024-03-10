@@ -5,6 +5,7 @@
 import { Cell, Graph, } from "@maxgraph/core";
 import { getCellValueRoot } from "./CellUtil";
 import { setupCellForShape } from "./ShapeUtil";
+import CustomGraph from "../CustomGraph";
 
 /**
  * Serialize a vertex to a string
@@ -42,10 +43,11 @@ export function serializeEdge(edge: Cell): string {
 /**
  * Serialize a graph to a string
  */
-export function serializeGraph(graph: Graph): string {
+export function serializeGraph(graph: CustomGraph): string {
     return JSON.stringify({
         root: serializeVertex(graph.getDefaultParent()),
         edges: graph.getChildCells(graph.getDefaultParent()).filter((cell) => cell.isEdge()).map(serializeEdge),
+        logs: graph.logs.map(log => JSON.stringify(log))
     });
 }
 
@@ -89,11 +91,15 @@ export function deserializeEdge(graph: Graph, serializedEdge: string): Cell {
 /**
  * Deserialize a graph from a string
  */
-export function deserializeGraph(graph: Graph, serializedGraph: string, clearGraph: boolean = true) {
+export function deserializeGraph(graph: CustomGraph, serializedGraph: string, clearGraph: boolean = true) {
     if (clearGraph) {
         graph.removeCells(graph.getChildCells(graph.getDefaultParent()));
     }
     const graphData = JSON.parse(serializedGraph);
     deserializeVertex(graph, graphData.root);
     graphData.edges.forEach(deserializeEdge.bind(null, graph));
+    graph.logs = []; // clear any old logs
+    graphData.logs.forEach((log: string) => {
+        graph.logs.push(JSON.parse(log));
+    });
 }
