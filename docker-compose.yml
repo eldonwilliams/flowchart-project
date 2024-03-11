@@ -7,8 +7,6 @@ services:
       dockerfile: Dockerfile
     environment:
       - PROD=${PROD:-false}
-    ports:
-      - "8797:8797"
     develop:
       watch:
         - action: sync
@@ -47,6 +45,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8797:8797"
     depends_on:
       - backend
       - frontend
