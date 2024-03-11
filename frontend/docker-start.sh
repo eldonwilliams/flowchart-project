@@ -8,7 +8,7 @@ if [ "$PROD" = "false" ]; then
     mkdir -p /usr/frontend/images
     cp -r images/ /usr/frontend
 
-    npm run build -- --watch --outDir /usr/frontend/build --emptyOutDir
+    npm run build -- --watch --outDir /usr/frontend/dist --emptyOutDir
     echo "Quitting, bye :)"
     exit 0
 elif [ "$PROD" = "true" ]; then

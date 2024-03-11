@@ -6,7 +6,7 @@
         file_server
     }
     handle /* {
-        root * /usr/frontend/build
+        root * /usr/frontend/dist
         file_server
     }
 }
