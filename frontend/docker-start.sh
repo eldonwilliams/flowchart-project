@@ -6,7 +6,7 @@ if [ "$PROD" = "false" ]; then
     export DEV=true
 
     mkdir -p /usr/frontend/images
-    cp -r images/ /usr/frontend/images
+    cp -r images/ /usr/frontend
 
     npm run build -- --watch --outDir /usr/frontend/build --emptyOutDir
     echo "Quitting, bye :)"
