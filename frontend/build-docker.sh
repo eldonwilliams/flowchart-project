@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This file handles building the frontend
+# Build the frontend then copy it to the appropriate directory
 
 npm run build
 
