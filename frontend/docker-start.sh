@@ -2,14 +2,20 @@
 
 # This file handles starting the frontend
 
+# mkdir -p /usr/frontend/images
+# mkdir -p /usr/frontend/dist
+
+echo "Starting Frontend"
+
 if [ "$PROD" = "false" ]; then
-    export DEV=true
+    echo "Development Environment"
+    # export DEV=true
+    # cp -r images/ /usr/frontend
+    # npm run build -- -w --outDir /usr/frontend/dist --emptyOutDir
+    npm install -g nodemon ts-node
 
-    mkdir -p /usr/frontend/images
-    cp -r images/ /usr/frontend
+    nodemon --ignore /dist/**/* --watch . -e ts,tsx,html,json,js,jsx --exec "MODE=development /bin/bash ./build-docker.sh"
 
-    npm run build -- --watch --outDir /usr/frontend/dist --emptyOutDir
-    echo "Quitting, bye :)"
     exit 0
 elif [ "$PROD" = "true" ]; then
     bash ./build-docker.sh

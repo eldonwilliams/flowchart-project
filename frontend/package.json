@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "docker-dev": "nodemon -e ts,tsx,html --exec bash ./build-docker.sh"
+    "serve": "vite preview"
   },
   "keywords": [],
   "author": "",
