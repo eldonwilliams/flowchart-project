@@ -1,4 +1,4 @@
-import { Shape } from "@maxgraph/core";
+import { Cell, Shape } from "@maxgraph/core";
 
 export function getDisplayName(shape: typeof Shape): string {
     //@ts-ignore it might
@@ -23,4 +23,11 @@ export function setupCellForShape(cell: any, shape: typeof Shape) {
     );
 
     cell.style = { ...defaultCellState, ...cell.style ?? {}, };
+}
+
+export function getShapeFromCell(cell: Cell) {
+    let w: any = window;
+    if (w.graph) {
+        return w.graph.cellRenderer.getShape(cell.style.shape);
+    }
 }

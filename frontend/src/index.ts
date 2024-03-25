@@ -1,8 +1,6 @@
 import "@maxgraph/core";
 import CustomGraph from "./CustomGraph";
-import { Cell, Client, InternalEvent } from "@maxgraph/core";
-import EllipseGeometryClass from "./shapes/geometry/EllipseGeometryClass";
-import SquareGeometryClass from "./shapes/geometry/SquareGeometryClass";
+import { Client, InternalEvent } from "@maxgraph/core";
 import { deserializeGraph, serializeGraph } from "./util/Serialization";
 import discoverFiles from "./util/ServerDiscovery";
 import { addServerItem, clearServerItems, hideServerDiscoveryMenu, showServerDiscoveryMenu, stopLoadingServerDiscoveryMenu } from "./util/ServerDiscoveryMenu";

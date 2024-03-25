@@ -1,16 +1,19 @@
 import { AbstractCanvas2D, CellState, Geometry, RectangleShape } from "@maxgraph/core";
 import CustomShapeInterface from "./CustomShapeInterface";
 import SquareGeometryClass from "./geometry/SquareGeometryClass";
+import { DoubleEntityShapeKey, EntityShapeKey } from "./Keys";
+
 
 export default class DoubleEntityShape extends RectangleShape implements CustomShapeInterface {
-    static shapeKey = "DoubleEntity";
+    static shapeKey = DoubleEntityShapeKey;
 
     static friendlyName: string = "Entity";
     
     static geometryClass: typeof Geometry = SquareGeometryClass;
 
-    static nonDoubleShape: string = "Entity";
-    static isDoubleShape: boolean = true;
+    static toSingle: string = EntityShapeKey;
+    static isDouble: boolean = true;
+    static isSingle: boolean = false;
 
     static defaultCellState: Partial<CellState> = {
         width: 60,

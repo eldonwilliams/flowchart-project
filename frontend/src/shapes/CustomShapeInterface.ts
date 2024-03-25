@@ -1,4 +1,4 @@
-import { CellState, Geometry } from "@maxgraph/core";
+import { CellState, Geometry, Shape } from "@maxgraph/core";
 
 /**
  * an abstract class which lays out all the properties custom shapes must have for different systems
@@ -10,6 +10,14 @@ export default abstract class CustomShapeInterface {
      * The internal id of the shape
      */
     public static shapeKey: string;
+
+    public static isDouble: boolean = false;
+
+    public static isSingle: boolean = true;
+
+    public static toDouble: string = null;
+
+    public static toSingle: string = null;
 
     /**
      * The name to be used for this shape when user facing

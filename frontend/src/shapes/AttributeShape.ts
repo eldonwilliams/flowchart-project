@@ -1,17 +1,19 @@
 import { CellState, EllipseShape, Geometry } from "@maxgraph/core";
 import CustomShapeInterface from "./CustomShapeInterface";
 import EllipseGeometryClass from "./geometry/EllipseGeometryClass";
+import { AttributeShapeKey, DoubleAttributeShapeKey } from "./Keys";
+
 
 export default class AttributeShape extends EllipseShape implements CustomShapeInterface {
-    static shapeKey = "Attribute";
+    static shapeKey = AttributeShapeKey;
 
     static friendlyName: string = "Attribute";
 
     static geometryClass: typeof Geometry = EllipseGeometryClass;
 
-    static doubleShape: string = "DoubleAttribute";
+    static toDouble: string = DoubleAttributeShapeKey;
     
-    static isDoubleShape: boolean = false;
+    static isSingle: boolean = true;
 
     static defaultCellState: Partial<CellState> = {
         width: 70,

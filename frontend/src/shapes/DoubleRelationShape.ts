@@ -1,17 +1,21 @@
 import { AbstractCanvas2D, CellState, Geometry, Point, RhombusShape } from "@maxgraph/core";
 import CustomShapeInterface from "./CustomShapeInterface";
 import EllipseGeometryClass from "./geometry/EllipseGeometryClass";
+import { DoubleRelationShapeKey, RelationShapeKey } from "./Keys";
+
 
 export default class DoubleRelationShape extends RhombusShape implements CustomShapeInterface {
-    static shapeKey = "DoubleRelation";
+    static shapeKey = DoubleRelationShapeKey;
 
     static friendlyName: string = "Relationship";
 
     static geometryClass: typeof Geometry = EllipseGeometryClass;
 
-    static isDoubleShape: boolean = true;
+    static isDouble: boolean = true;
 
-    static nonDoubleShape: string = "Relation";
+    static isSingle: boolean = false;
+
+    static toSingle: string = RelationShapeKey;
 
     static defaultCellState: Partial<CellState> = {
         width: 70,

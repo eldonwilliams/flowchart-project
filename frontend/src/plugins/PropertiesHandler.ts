@@ -5,7 +5,7 @@ import { getCellValue, setCellValue } from "../util/CellUtil";
 enum PROPERTY_TYPE {
     NUMBER,
     STRING,
-    JOIN_SELECTION,
+    DROPDOWN,
     BREAK,
     CHECKBOX
 }
@@ -13,17 +13,8 @@ enum PROPERTY_TYPE {
 type PropertyStyle = {
     label: string,
     width: string,
+    options?: string[],
 }
-
-// an array of edge connection styles to be used in the properties drawer
-const EdgeConnectionStyles = [
-    "none",
-    ARROW.OPEN,
-    ARROW.BLOCK,
-    ARROW.CLASSIC,
-    ARROW.DIAMOND,
-    ARROW.OVAL,
-];
 
 const DoubleShapes = [
     "ellipse",
@@ -132,25 +123,13 @@ export default class PropertiesHandler implements GraphPlugin {
         this.addProperty(vertex.geometry.width, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'width'), { label: "Width", width: "75px", });
         this.addProperty(vertex.geometry.height, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'height'), { label: "Height", width: "75px", });
         this.endGroup();
-        
-        if (Object.prototype.hasOwnProperty.call(shapeClass, 'isDoubleShape')) {
-            // @ts-ignore
-            this.addProperty(shapeClass.isDoubleShape, PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
-                // @ts-ignore
-                if (shapeClass.isDoubleShape) {
-                    // @ts-ignore
-                    vertex.style.shape = shapeClass.nonDoubleShape;
-                } else {
-                    // @ts-ignore
-                    vertex.style.shape = shapeClass.doubleShape;
-                }
-                this.resetProperties();
-                this.handleClickOnVertex(vertex); // re-render the properties
-            }), { label: "Double Border", width: "150px", });
-        }
 
-        this.addProperty(vertex.style.dashed, PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
-            vertex.style.dashed = input.checked;
+        this.addProperty(getCellValue(vertex, "double"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => {
+            setCellValue(vertex, "double", input.checked);
+        }, { label: "Double Border", width: "150px", });
+
+        this.addProperty(getCellValue(vertex, "dashed"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+            setCellValue(vertex, "dashed", input.checked);
         }), { label: "Dashed", width: "150px", });
 
 
@@ -181,15 +160,15 @@ export default class PropertiesHandler implements GraphPlugin {
             width: "150px",
         });
 
-        this.addProperty(edge.style.startArrow, PROPERTY_TYPE.JOIN_SELECTION, styleChange.bind(this, 'startArrow'), {
-            label: "Start Arrow",
-            width: "150px",
-        });
+        this.addProperty(getCellValue(edge, "double"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => {
+            setCellValue(edge, "double", input.checked);
+        }, { label: "Mandatory Participation", width: "150px", });
 
-        this.addProperty(edge.style.endArrow, PROPERTY_TYPE.JOIN_SELECTION, styleChange.bind(this, 'endArrow'), {
-            label: "End Arrow",
-            width: "150px",
-        });
+        let cardinality = getCellValue(edge, "cardinality");
+        this.addProperty(cardinality === false ? "none" : cardinality, PROPERTY_TYPE.DROPDOWN, (input: HTMLInputElement) => {
+            setCellValue(edge, "cardinality", input.value != "none" ? input.value : false)
+        }, { label: "Cardinality", width: "150px", options: [ "none", "I", "J", "M", "N", ] })
+
     }
 
     /**
@@ -213,7 +192,7 @@ export default class PropertiesHandler implements GraphPlugin {
     /**
      * Adds a property to the drawer
      */
-    private addProperty(value: any, type: PROPERTY_TYPE, handleChange: Function, { label, width, }: PropertyStyle = { label: "", width: "w-full" }) {
+    private addProperty(value: any, type: PROPERTY_TYPE, handleChange: Function, { label, width, options, }: PropertyStyle = { label: "", width: "w-full" }) {
         PropertiesHandler.PROPERTY_ELEMENT.parentElement.classList.remove('hidden');
         let input: HTMLInputElement | HTMLSelectElement;
 
@@ -258,7 +237,7 @@ export default class PropertiesHandler implements GraphPlugin {
                 parent.appendChild(b);
                 parent.appendChild(input);
                 break;
-            case PROPERTY_TYPE.JOIN_SELECTION:
+            case PROPERTY_TYPE.DROPDOWN:
                 const c = document.createElement('label');
                 c.htmlFor = label;
                 c.innerText = label;
@@ -267,7 +246,7 @@ export default class PropertiesHandler implements GraphPlugin {
                 select.id = label;
                 select.name = label;
 
-                EdgeConnectionStyles.forEach(style => {
+                options!.forEach(style => {
                     const option = document.createElement('option');
                     option.value = style;
                     // const previewGraph = new Graph(option);

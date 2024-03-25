@@ -8,7 +8,8 @@ import EditorHandler from "./plugins/EditorHandler";
 import DragAndDropHandler from "./plugins/DragAndDropHandler";
 import PropertiesHandler from "./plugins/PropertiesHandler";
 import { defaultPlugins } from "@maxgraph/core/dist/view/Graph";
-import { getCellValue, setCellValue } from "./util/CellUtil";
+import DoUpdate, { getCellValue, setCellValue } from "./util/CellUtil";
+import StyledFeatures from "./plugins/StyledFeatures";
 
 const defaultPluginsMap: { [key: string]: GraphPluginConstructor } = {};
 defaultPlugins.forEach(p => defaultPluginsMap[p.pluginId] = p);
@@ -31,6 +32,9 @@ export default class CustomGraph extends Graph {
         defaultPluginsMap[EditorHandler.pluginId] = EditorHandler;
         defaultPluginsMap[DragAndDropHandler.pluginId] = DragAndDropHandler;
         defaultPluginsMap[PropertiesHandler.pluginId] = PropertiesHandler;
+        defaultPluginsMap[StyledFeatures.pluginId] = StyledFeatures;
+
+        delete defaultPluginsMap[EditorHandler.pluginId];
 
         super(container, null, Object.values(defaultPluginsMap));
 
@@ -64,9 +68,10 @@ export default class CustomGraph extends Graph {
 
         this.removeCells(this.getChildCells(this.getDefaultParent(), true, true));
 
-        this.addListener(InternalEvent.CELLS_ADDED, (sender, evt) => {
+        let graph = this;
+        this.addListener(InternalEvent.CELLS_ADDED, function (sender, evt) {
             evt.getProperty("cells").forEach(cell => {
-                setCellValue(cell, "created", Date.now());
+                setCellValue(cell, "created", Date.now(), true);
             });
         })
     }
@@ -87,8 +92,6 @@ export default class CustomGraph extends Graph {
         }
         return getCellValue(cell, "label");
     }
-
-    startEditing: () => {};
 
     // copied from a story book example, this allows constraints to work
     getAllConnectionConstraints = (terminal: CellState, source: boolean) => {
