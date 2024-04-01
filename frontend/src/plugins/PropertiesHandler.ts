@@ -89,15 +89,13 @@ export default class PropertiesHandler implements GraphPlugin {
     }
 
     private handleClickOnVertex(vertex: Cell) {
-        const shapeClass = this.graph.cellRenderer.getShape(vertex.style.shape);
-
-        const doUpdate = (fn: Function, updateEdges: boolean = false) => {
+        function doUpdate(fn: Function, updateEdges: boolean = false) {
             this.graph.batchUpdate(() => {
                 fn();
             });
             this.graph.refresh(vertex);
             if (updateEdges) {
-                this.graph.getEdges(vertex).forEach(edge => {
+                this.graph.getEdges(vertex).forEach(function (edge) {
                     this.graph.refresh(edge);
                 });
             }
@@ -113,7 +111,7 @@ export default class PropertiesHandler implements GraphPlugin {
         }, true);
 
         this.addProperty(getCellValue(vertex, "label"), PROPERTY_TYPE.STRING, handleLabelChange, { label: "Label", width: "150px", });
-        
+
         this.startGroup("Geometry - Position");
         this.addProperty(vertex.geometry.x, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'x'), { label: "X", width: "75px", });
         this.addProperty(vertex.geometry.y, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'y'), { label: "Y", width: "75px", });
@@ -128,38 +126,18 @@ export default class PropertiesHandler implements GraphPlugin {
             setCellValue(vertex, "double", input.checked);
         }, { label: "Double Border", width: "150px", });
 
-        this.addProperty(getCellValue(vertex, "dashed"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+        this.addProperty(getCellValue(vertex, "dashed"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => {
             setCellValue(vertex, "dashed", input.checked);
-        }), { label: "Dashed", width: "150px", });
+        }, { label: "Dashed", width: "150px", });
 
 
-        this.addProperty(getCellValue(vertex, "underlined"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => doUpdate(() => {
+        this.addProperty(getCellValue(vertex, "underlined"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => {
             setCellValue(vertex, "underlined", input.checked);
-        }), { label: "Underlined", width: "150px", });
+        }, { label: "Underlined", width: "150px", });
         // this.endGroup();
     }
 
     private handleClickOnEdge(edge: Cell) {
-        const handleLabelChange = (input: HTMLInputElement) => {
-            this.graph.batchUpdate(() => {
-                setCellValue(edge, "label", input.value);
-            });
-            this.graph.refresh(edge);
-        }
-
-        const styleChange = (style: keyof Cell, input: HTMLInputElement) => {
-            this.graph.batchUpdate(() => {
-                // @ts-ignore shutup
-                edge.style[style] = input.value;
-            });
-            this.graph.refresh(edge);
-        }
-
-        this.addProperty(getCellValue(edge, "label"), PROPERTY_TYPE.STRING, handleLabelChange, {
-            label: "Label",
-            width: "150px",
-        });
-
         this.addProperty(getCellValue(edge, "double"), PROPERTY_TYPE.CHECKBOX, (input: HTMLInputElement) => {
             setCellValue(edge, "double", input.checked);
         }, { label: "Mandatory Participation", width: "150px", });
@@ -167,7 +145,7 @@ export default class PropertiesHandler implements GraphPlugin {
         let cardinality = getCellValue(edge, "cardinality");
         this.addProperty(cardinality === false ? "none" : cardinality, PROPERTY_TYPE.DROPDOWN, (input: HTMLInputElement) => {
             setCellValue(edge, "cardinality", input.value != "none" ? input.value : false)
-        }, { label: "Cardinality", width: "150px", options: [ "none", "I", "J", "M", "N", ] })
+        }, { label: "Cardinality", width: "150px", options: ["none", "I", "J", "M", "N",] })
 
     }
 
