@@ -11,7 +11,14 @@ import DoubleLineShape from "../edge-renders/DoubleLineShape";
 import { getShapeFromCell, setupCellForShape } from "../util/ShapeUtil";
 import CustomShapeInterface from "../shapes/CustomShapeInterface";
 
-export type CellChangeListener = (cells: Cell[]) => void;
+export type CellChangeListener = (cells: CellChangeEvent[]) => void;
+
+export interface CellChangeEvent {
+    cell: Cell;
+    changed: string;
+    new: any;
+    old: any;
+}
 
 export default class StyledFeatures implements GraphPlugin {
     public static pluginId: string = "StyledFeatures";
@@ -23,7 +30,7 @@ export default class StyledFeatures implements GraphPlugin {
     constructor(graph: CustomGraph) {
         this.graph = graph;
 
-        this.DoUpdate = DoUpdate.bind(this, graph);
+        this.DoUpdate = DoUpdate.bind(graph, graph);
 
         graph.addListener(InternalEvent.ADD, (_, obj: EventObject) => {
             this.invokeListeners(obj.getProperty("cells"));
@@ -31,19 +38,28 @@ export default class StyledFeatures implements GraphPlugin {
 
         this.addListener(this.insertInitialShapeValue.bind(this));
         this.addListener(this.updateDoubleShape.bind(this));
+        this.addListener(this.updateDashStyle.bind(this));
+        this.addListener(this.updateCardinalityLabel.bind(this));
     }
 
     DoUpdate;
 
-    public invokeListeners(cells: Cell[]) {
+    public invokeListeners(cells: CellChangeEvent[] | CellChangeEvent) {
+        if (!(cells instanceof Array)) {
+            this.invokeListeners([cells]);
+            return;
+        }
+
         this.listeners.forEach(l => l(cells));
     }
 
-    public insertInitialShapeValue(cell: Cell | Cell[]) {
-        if (cell instanceof Array) {
-            cell.forEach(c => this.insertInitialShapeValue(c));
+    public insertInitialShapeValue(event: CellChangeEvent | CellChangeEvent[]) {
+        if (event instanceof Array) {
+            event.forEach(c => this.insertInitialShapeValue(c));
             return;
         }
+
+        let cell = event.cell;
 
         if (cell.isEdge()) return;
 
@@ -53,11 +69,13 @@ export default class StyledFeatures implements GraphPlugin {
         setupCellForShape(cell, getShapeFromCell(cell));
     }
 
-    public updateDoubleShape(cell: Cell | Cell[]) {
-        if (cell instanceof Array) {
-            cell.forEach(c => this.updateDoubleShape(c));
+    public updateDoubleShape(event: CellChangeEvent | CellChangeEvent[]) {
+        if (event instanceof Array) {
+            event.forEach(c => this.updateDoubleShape(c));
             return;
         }
+
+        let cell = event.cell;
 
         let values = getCellValueRoot(cell);
 
@@ -85,6 +103,55 @@ export default class StyledFeatures implements GraphPlugin {
             this.DoUpdate(cell, () => {
                 cell.style.shape = getCellValue(cell, "shape");
             });
+        }
+    }
+
+    public updateCardinalityLabel(event: CellChangeEvent | CellChangeEvent[]) {
+        if (event instanceof Array) {
+            event.forEach(c => this.updateCardinalityLabel(c));
+            return;
+        }
+
+        let cell = event.cell;
+        let values = getCellValueRoot(cell);
+
+        if (cell.isVertex()) {
+            return;
+        }
+
+        let sourceIsEntity = cell.source.isVertex() && getCellValue(cell.source, "shape") == "Entity";
+
+        cell.geometry.setRect(0.9 * (sourceIsEntity ? -1 : 1), 10, 10, 10);
+
+        if (values.cardinality == "none") {
+            this.DoUpdate(cell, () => {
+                setCellValue(cell, "label", "", true);
+            });
+        }
+
+        this.DoUpdate(cell, () => {
+            setCellValue(cell, "label", values.cardinality, true);
+        });
+    }
+
+    public updateDashStyle(event: CellChangeEvent | CellChangeEvent[]) {
+        if (event instanceof Array) {
+            event.forEach(c => this.updateDashStyle(c));
+            return;
+        }
+
+        let cell = event.cell;
+        let values = getCellValueRoot(cell);
+
+        if (cell.isVertex()) {
+            this.DoUpdate(cell, () => {
+                cell.style.dashed = values.dashed;
+            });
+        } else if (cell.isEdge() && values.dashed) {
+            this.DoUpdate(cell, () => {
+                cell.style.dashed = false;
+            });
+            setCellValue(cell, "dashed", false, true);
         }
     }
 
