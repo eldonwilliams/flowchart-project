@@ -1,4 +1,4 @@
-import { CellRenderer, GraphPluginConstructor, CellState, Graph, Cell, CellStyle, Geometry, VertexParameters, InternalEvent } from "@maxgraph/core";
+import { CellRenderer, GraphPluginConstructor, CellState, Graph, Cell, CellStyle, Geometry, VertexParameters, InternalEvent, ConnectionHandler } from "@maxgraph/core";
 import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
 import CustomConnectionHandler from "./plugins/CustomConnectionHandler";
 import CustomCellRenderer from "./plugins/CustomCellRenderer";
@@ -38,6 +38,15 @@ export default class CustomGraph extends Graph {
 
         super(container, null, Object.values(defaultPluginsMap));
 
+        let connectionHandler = (this.getPlugin(ConnectionHandler.pluginId) as ConnectionHandler);
+        let oldConnect = connectionHandler.connect.bind(connectionHandler);
+        let isValidConnection = this.isValidConnection.bind(this);
+        connectionHandler.connect = function (source: Cell, target: Cell, ...a) {
+            if (isValidConnection(source, target)) {
+                oldConnect(source, target, ...a);
+            }
+        }
+
         this.getDataModel().createId = () => this.nextId + "-" + Math.random().toString().slice(2);
 
         // This is super hacky
@@ -72,14 +81,28 @@ export default class CustomGraph extends Graph {
         this.addListener(InternalEvent.CELLS_ADDED, function (sender, evt) {
             evt.getProperty("cells").forEach(cell => {
                 setCellValue(cell, "created", Date.now(), true);
+                setCellValue(cell, "shape", cell.style.shape, true);
             });
         })
     }
     
     private lastId = 0;
 
-    public get nextId() : string {
-        return this.lastId++ + "";
+    private commutativeCheck(a, b, c, d) {
+        return (a == c && b == d) || (a == d && b == c);
+    }
+
+    public isValidConnection: (source: Cell, target: Cell) => boolean = (source: Cell, target: Cell) => {
+        let a = getCellValue(source, "shape");
+        let b = getCellValue(target, "shape");
+        console.log(a, b);
+        if (a == undefined || b == undefined) return true; // default to true
+
+        if (this.commutativeCheck(a, b, "Relation", "Entity")) return true;
+        if (this.commutativeCheck(a, b, "Entity", "Attribute")) return true;
+        if (this.commutativeCheck(a, b, "Relation", "Attribute")) return true;
+
+        return false;
     }
 
     createCellRenderer(): CellRenderer {
