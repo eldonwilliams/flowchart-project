@@ -1,5 +1,5 @@
 import { Cell } from "@maxgraph/core";
-import StyledFeatures from "../plugins/StyledFeatures";
+import StyledFeatures, { CellChangeEvent } from "../plugins/StyledFeatures";
 import CustomGraph from "../CustomGraph";
 import { ARROW } from "@maxgraph/core/dist/util/Constants";
 
@@ -41,6 +41,7 @@ export function setCellValue(cell: Cell, key: keyof TrueCellValues, value: any, 
     if (typeof cell.value === "string" || cell.value === null) {
         cell.setValue({ label: cell.value });
     }
+    let old = cell.value[key];
     cell.value[key] = value;
     cell.value["updated"] = Date.now();
     let w: any = window;
@@ -52,7 +53,15 @@ export function setCellValue(cell: Cell, key: keyof TrueCellValues, value: any, 
             newValue: value,
         });
         if (quite == true) return;
-        w.graph.getPlugin(StyledFeatures.pluginId).invokeListeners([cell]);
+
+        let event: CellChangeEvent = {
+            cell,
+            changed: key as string,
+            new: value,
+            old,
+        };
+
+        w.graph.getPlugin(StyledFeatures.pluginId).invokeListeners(event);
     }
 }
 
