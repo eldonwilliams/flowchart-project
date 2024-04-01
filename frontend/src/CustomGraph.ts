@@ -86,7 +86,11 @@ export default class CustomGraph extends Graph {
         })
     }
     
-    private lastId = 0;
+    private lastId = 1;
+
+    get nextId() {
+        return this.lastId++;
+    }
 
     private commutativeCheck(a, b, c, d) {
         return (a == c && b == d) || (a == d && b == c);
