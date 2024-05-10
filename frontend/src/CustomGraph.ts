@@ -1,4 +1,4 @@
-import { CellRenderer, GraphPluginConstructor, CellState, Graph, Cell, CellStyle, Geometry, VertexParameters, InternalEvent, ConnectionHandler } from "@maxgraph/core";
+import { CellRenderer, GraphPluginConstructor, CellState, Graph, Cell, InternalEvent, ConnectionHandler } from "@maxgraph/core";
 import CustomPopupMenuHandler from "./plugins/CustomPopupMenuHandler";
 import CustomConnectionHandler from "./plugins/CustomConnectionHandler";
 import CustomCellRenderer from "./plugins/CustomCellRenderer";
@@ -8,7 +8,7 @@ import EditorHandler from "./plugins/EditorHandler";
 import DragAndDropHandler from "./plugins/DragAndDropHandler";
 import PropertiesHandler from "./plugins/PropertiesHandler";
 import { defaultPlugins } from "@maxgraph/core/dist/view/Graph";
-import DoUpdate, { getCellValue, setCellValue } from "./util/CellUtil";
+import { getCellValue, setCellValue } from "./util/CellUtil";
 import StyledFeatures from "./plugins/StyledFeatures";
 
 const defaultPluginsMap: { [key: string]: GraphPluginConstructor } = {};
@@ -49,11 +49,6 @@ export default class CustomGraph extends Graph {
 
         this.getDataModel().createId = () => this.nextId + "-" + Math.random().toString().slice(2);
 
-        // This is super hacky
-        // An edge must first be inserted to the graph before
-        // Serialized edges can be inserted
-        // I don't know why this is the case
-        // Probably a bug in maxgraph, one of many
         this.batchUpdate(() => {
             const a = this.insertVertex({
                 parent: this.getDefaultParent(),

@@ -1,36 +1,29 @@
 import express from "express";
 import cors from "cors";
 import { readdir, readFile } from "fs";
+import { join } from "path";
+import { json } from "body-parser";
 
 const app = express();
 
+app.use(json())
 app.use(cors());
 
-const discoveryDirectory = process.env.DISCOVERY_DIRECTORY ?? "./examples";
+readdir(join(__dirname, "./routes"), { recursive: true, withFileTypes: true, }, (err, files) => {
+    if (err) console.log(err);
 
-app.get("/discovery", (req, res) => {
-    readdir(discoveryDirectory, (err, files) => {
-        if (err) {
-            res.status(500).send("An error occurred while reading the directory.");
-            return;
+    console.log(`found ${files.length} routes to load`)
+    files.forEach((direntry) => {
+        try {
+            const file = join(__dirname, "./routes", direntry.path ?? "", direntry.name);
+            console.log(`loading route ${direntry.name} (@${file})`);
+            const handler = require(file).default;
+            if (typeof handler == "function") handler(app);
+            console.log(`success`);
+        } catch (err) {
+            console.error(`Error occurred whilst loading route ${direntry.name}`);
         }
-        res.status(200).json(files.filter((file) => file.endsWith(".dat")));
     });
-});
-
-app.get("/discovery/:file", (req, res) => {
-    const file = req.params.file;
-    readFile(`${discoveryDirectory}/${file}`, "utf8", (err, data) => {
-        if (err) {
-            res.status(500).send("An error occurred while reading the file.");
-            return;
-        }
-        res.status(200).send(data);
-    });
-});
-
-app.get("/health", (req, res) => {
-    res.status(200).send(process.env.PROD?.toLowerCase() == "true" ? "OK FROM PROD!" : "OK FROM DEV!");
 });
 
 app.listen(process.env.BACKEND_PORT ?? 8797, () => {
