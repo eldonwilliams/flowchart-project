@@ -8,7 +8,7 @@ rm -r /usr/frontend
 
 if [ "$MODE" != "" ]; then
     echo "MODE = $MODE"
-    npm run build -- --mode development
+    NODE_ENV=development npm run build -- --mode development
 else
     echo "MODE UNSET"
     npm run build

@@ -73,8 +73,8 @@ serverPickButton.onclick = async () => {
         fetch(`${url}/discovery/${file}`)
             .then((res) => res.text())
             .then((data) => {
-                deserializeGraph(graph, data);
                 hideServerDiscoveryMenu();
+                deserializeGraph(graph, data);
             });
     }, false));
 
