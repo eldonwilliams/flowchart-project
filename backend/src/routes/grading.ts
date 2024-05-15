@@ -1,6 +1,7 @@
 import { Application } from "express";
 import { text } from "body-parser";
 import { deserializeGraph } from "../transformer/serialization";
+import grade from "../transformer/grade";
 
 export default function Grading(app: Application) {
     app.post('/grading', text({
@@ -9,14 +10,12 @@ export default function Grading(app: Application) {
         let data = req.body;
 
         let split = data.split('\n');
-        let assignment = split[0];
-        let template = split[1];
+        let assignment = deserializeGraph(split[0]);
+        let template = deserializeGraph(split[1]);
 
-        console.log(template)
-        let r = deserializeGraph(assignment);
-        console.log(r);
+        let score = grade(assignment, template);
 
-        res.send(r);
+        res.send(score.toString());
 
     })
 }

@@ -2,8 +2,12 @@ import { Cell, Graph, PopupMenuHandler } from "@maxgraph/core";
 import SquareGeometryClass from "../shapes/geometry/SquareGeometryClass";
 
 export default class CustomPopupMenuHandler extends PopupMenuHandler {
+    // private graph: Graph;
+
     constructor(graph: Graph) {
         super(graph);
+
+        // this.graph = graph;
 
         // @ts-ignore
         this.factoryMethod = (handler: CustomPopupMenuHandler, cell: Cell, me: MouseEvent) => {

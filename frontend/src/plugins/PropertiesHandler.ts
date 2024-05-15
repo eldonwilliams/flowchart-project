@@ -89,14 +89,14 @@ export default class PropertiesHandler implements GraphPlugin {
     }
 
     private handleClickOnVertex(vertex: Cell) {
+        const graph = this.graph;
+
         function doUpdate(fn: Function, updateEdges: boolean = false) {
-            this.graph.batchUpdate(() => {
-                fn();
-            });
-            this.graph.refresh(vertex);
+            graph.batchUpdate(fn);
+            graph.refresh(vertex);
             if (updateEdges) {
-                this.graph.getEdges(vertex).forEach(function (edge) {
-                    this.graph.refresh(edge);
+                graph.getEdges(vertex).forEach(function (edge) {
+                    graph.refresh(edge);
                 });
             }
         }

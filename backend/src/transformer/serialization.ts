@@ -1,4 +1,3 @@
-import Array2D from "./2darray";
 import { findIndexById } from "./util";
 
 export type ServerVertexRepresentation = {
@@ -10,6 +9,7 @@ export type ServerVertexRepresentation = {
   updated: number;
   created: number;
   shape: string;
+  edges: number[];
 };
 
 export type ServerEdgeRepresentation = {
@@ -17,16 +17,13 @@ export type ServerEdgeRepresentation = {
   double: boolean;
   updated: number;
   created: number;
+  source: number;
+  target: number;
 };
 
 export type ServerERRespresentation = {
   vertices: ServerVertexRepresentation[];
-  /***
-   * 2D adjacency matrix of edges
-  //  * source->target
-   * a-b this is a doubly linked edge
-   */
-  edges: Array2D<ServerEdgeRepresentation>;
+  edges: ServerEdgeRepresentation[];
 };
 
 const defaultVertex: ServerVertexRepresentation = {
@@ -38,6 +35,7 @@ const defaultVertex: ServerVertexRepresentation = {
   updated: -1,
   created: -1,
   shape: "NULL",
+  edges: [],
 };
 
 const defaultEdge: ServerEdgeRepresentation = {
@@ -45,6 +43,8 @@ const defaultEdge: ServerEdgeRepresentation = {
   double: false,
   updated: -1,
   created: -1,
+  source: -1,
+  target: -1,
 };
 
 // use the accumulator pattern because verticies on the frontend
@@ -67,7 +67,6 @@ export function deserializeVertex(
 
 export function deserializeEdge(
   data: string,
-  arr: Array2D<ServerEdgeRepresentation>,
   verts: ServerVertexRepresentation[],
   cache: Map<string, number> | undefined = undefined
 ): ServerEdgeRepresentation {
@@ -75,10 +74,12 @@ export function deserializeEdge(
   let sourceIndex = findIndexById(source, verts, cache);
   let targetIndex = findIndexById(target, verts, cache);
 
-  let edge = { ...defaultEdge, ...value };
-
-  arr.set(sourceIndex, targetIndex, edge);
-  arr.set(targetIndex, sourceIndex, edge); // doubly linked edge
+  let edge = {
+    ...defaultEdge,
+    ...value,
+    source: sourceIndex,
+    target: targetIndex,
+  };
 
   return edge;
 }
@@ -89,10 +90,16 @@ export function deserializeGraph(data: string): ServerERRespresentation {
   JSON.parse(parsed.root).children.forEach((v: string) =>
     deserializeVertex(v, vertices)
   );
-  let edges = new Array2D<ServerEdgeRepresentation>(0, 0, undefined);
   let cache = new Map<string, number>(); // use a memo for index to id lookups
-  JSON.parse(parsed.edges).forEach((e: string) =>
-    deserializeEdge(e, edges, vertices, cache)
+  let edges: ServerEdgeRepresentation[] = parsed.edges.map((e: string) =>
+    deserializeEdge(e, vertices, cache)
   );
+  vertices = vertices.map((v, i) => ({
+    ...v,
+    edges: edges
+      .map((e, i) => ({ ...e, idx: i, }))
+      .filter(e => e.source === i || e.target === i)
+      .map((e) => e.idx),
+  }))
   return { vertices, edges };
 }

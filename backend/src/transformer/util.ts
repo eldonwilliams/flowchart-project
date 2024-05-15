@@ -16,6 +16,11 @@ export function levenshteinDistance(a: string, b: string): number {
   );
 }
 
+// checks if a and b are similar, but currently has the same implementation as isMatch (exact)
+export function isSimilar(a: ServerVertexRepresentation, b: ServerVertexRepresentation, config: Configuration = defaultConfig): boolean {
+  return levenshteinDistance(a.label, b.label) <= config.labelingDistance;
+}
+
 export function findIndexById(
   id: string,
   vertices: ServerVertexRepresentation[],
@@ -32,8 +37,10 @@ export function findIndexById(
   return -1;
 }
 
-export function isMatch(a: ServerVertexRepresentation, b: ServerVertexRepresentation, config: Configuration = defaultConfig): boolean {
-  return levenshteinDistance(a.label, b.label) <= config.labelingDistance;
+export function isMatch(
+  a: ServerVertexRepresentation,
+  b: ServerVertexRepresentation,
+  config: Configuration = defaultConfig
+): boolean {
+  return a.label === b.label;
 }
-
-export function 
