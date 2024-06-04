@@ -1,4 +1,4 @@
-interface Attribute {
+export interface Attribute {
     id: string;
     multivalue: boolean;
     label: string;
@@ -6,11 +6,11 @@ interface Attribute {
     composite: boolean;
 }
 
-function isAttribute(vertex: Vertex): vertex is Attribute {
+export function isAttribute(vertex: Vertex): vertex is Attribute {
     return vertex.hasOwnProperty('composite');
 }
 
-interface Relationship {
+export interface Relationship {
     id: string;
     weak: boolean;
     label: string;
@@ -18,44 +18,44 @@ interface Relationship {
     connects: number[];
 }
 
-function isRelationship(vertex: Vertex): vertex is Relationship {
+export function isRelationship(vertex: Vertex): vertex is Relationship {
     return vertex.hasOwnProperty('connects');
 }
 
-interface Entity {
+export interface Entity {
     id: string;
     weak: boolean;
     label: string;
     attributes: Attribute[];
 }
 
-function isEntity(vertex: Vertex): vertex is Entity {
+export function isEntity(vertex: Vertex): vertex is Entity {
     return !vertex.hasOwnProperty('connects') && !vertex.hasOwnProperty('composite');
 }
 
 type Edge = [number, number];
 
-type Vertex = Entity | Relationship | Attribute;
+export type Vertex = Entity | Relationship | Attribute;
 
-interface Graph {
+export interface Graph {
     entities: Entity[];
     relationships: Relationship[];
 }
 
-/**
- * Gets all verticies which are connected to a given vertex
- */
-function getConnectedVerticies(vertex: Vertex, verticies: Vertex[], edges: Edge): Vertex[] {
-    return [];
-}
+// /**
+//  * Gets all verticies which are connected to a given vertex
+//  */
+// function getConnectedVerticies(vertex: Vertex, verticies: Vertex[], edges: Edge): Vertex[] {
+//     return [];
+// }
 
-function populateAttributesProperty(verticies: Vertex[], edges: Edge): Vertex[] {
-    return [];
-}
+// function populateAttributesProperty(verticies: Vertex[], edges: Edge): Vertex[] {
+//     return [];
+// }
 
-function populateConnectsProperty(verticies: Vertex[], edges: Edge): Vertex[] {
-    return [];
-}
+// function populateConnectsProperty(verticies: Vertex[], edges: Edge): Vertex[] {
+//     return [];
+// }
 
 /**
  * Deserializes a vertex with the most information available
@@ -96,6 +96,15 @@ function deserializeVertex(vertex: string): Vertex | undefined {
     }
 }
 
+/**
+ * Returns a array of edges that represent the connections between sets a and b.
+ * Formatted as [a,b]
+ * 
+ * @param a 
+ * @param b 
+ * @param edges 
+ * @returns 
+ */
 function getEdgesBetweenSets(a: Vertex[], b: Vertex[], edges: string[]): Edge[] {
     return edges.map((e: string) => {
         const { source, target } = JSON.parse(e);
@@ -107,6 +116,15 @@ function getEdgesBetweenSets(a: Vertex[], b: Vertex[], edges: string[]): Edge[] 
     }).filter((v: number[]) => v.indexOf(-1) === -1 && v.length === 2).map((v: number[]) => v as Edge);
 }
 
+/**
+ * Inserts attributes to a set
+ * Used to reduce repeated code between inserting attributes to relationships and entities
+ * 
+ * @param set 
+ * @param attributes 
+ * @param edges 
+ * @returns 
+ */
 function insertAttributesToSet<T>(set: T[], attributes: Attribute[], edges: Edge[]): T[] {
     return set.map((v, i) => ({
         ...v,
