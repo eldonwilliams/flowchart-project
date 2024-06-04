@@ -81,26 +81,20 @@ function compareAttributes(submission: Attribute[], template: Attribute[], isRel
         let submissionAttribute = submission.find(a => a.label === templateAttribute.label);
         if (submissionAttribute === undefined) {
             lengthAdjust++;
-            // marks -= weighting.AttributesCorrect; // You lose out on points for missing a attribute
-            // not a penalty
-            // console.log(`SUB b/c couldn't find attribute`)
             return;
         }
         submission = submission.filter(v => v.label !== templateAttribute.label); // remove it
 
         if (submissionAttribute.composite === templateAttribute.composite && submissionAttribute.multivalue === templateAttribute.multivalue) {
             marks += weighting.AttributesCorrect;
-            console.log(`ADD b/c attribute correct`)
         }
 
         if (templateAttribute.key && submissionAttribute.key === templateAttribute.key && !isRelation) {
             marks += weighting.PrimaryKeys;
-            console.log(`ADD b/c primary keys`)
         }
     });
 
     marks -= weighting.ExtraAttributes * (submission.length - lengthAdjust);
-    console.log(`SUB b/c extra attrbitues`)
 
     return marks;
 }
@@ -150,14 +144,14 @@ function compareRelationship(submission: Relationship, template: Relationship, s
         }, [-Infinity, -1])
         submissionCopy.connects = submissionCopy.connects.filter(i => i !== submissionIndex);
         let submissionEntity = submissionEntities[submissionIndex];
+        if (submissionEntity === undefined) {
+            return;
+        }
         if (templateEntity.label === submissionEntity.label && templateEntity.weak === submissionEntity.weak) {
             marks += weighting.RelationshipEntities / template.connects.length;
-            console.log(`ADD for RelationshipEntities`)
         }
     });
     marks -= submissionCopy.connects.length * weighting.ExtraRelationshipConnections
-    if (submissionCopy.connects.length > 0)
-        console.log(`SUB ${weighting.ExtraRelationshipConnections * submissionCopy.connects.length} for ExtraRelationshipConnections`)
     return marks;
 }
 
@@ -188,10 +182,12 @@ export function grade(submission: Graph, template: Graph, weighting: GradeWeight
                 topmarkIndex = j;
             }
         }
+        if (topmarkIndex === -1) {
+            break;
+        }
         submissionEntitiesCopy = submissionEntitiesCopy.filter((_, i) => i !== topmarkIndex);
         studentScore += topmark;
     }
-
 
     for (let i = 0; template.relationships.length > i; i++) {
         let topmarkIndex = -1;
@@ -202,6 +198,9 @@ export function grade(submission: Graph, template: Graph, weighting: GradeWeight
                 topmark = marks;
                 topmarkIndex = j;
             }
+        }
+        if (topmarkIndex === -1) {
+            break;
         }
         submission.relationships = submission.relationships.filter((_, i) => i !== topmarkIndex);
         studentScore += topmark;
