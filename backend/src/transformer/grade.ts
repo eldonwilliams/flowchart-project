@@ -73,14 +73,17 @@ function calculateMaxGrade(template: Graph, weighting: GradeWeights = defaultWei
  */
 function compareAttributes(submission: Attribute[], template: Attribute[], isRelation: boolean = false, weighting: GradeWeights = defaultWeights): number {
     let marks = 0;
+    let lengthAdjust = 0;
 
     template.forEach(templateAttribute => {
         // TODO: Change to be more inline with how other things are calculate (take highest marks)
         // Run through all attributes and see which works best
         let submissionAttribute = submission.find(a => a.label === templateAttribute.label);
         if (submissionAttribute === undefined) {
-            marks -= weighting.AttributesCorrect;
-            console.log(`SUB b/c couldn't find attribute`)
+            lengthAdjust++;
+            // marks -= weighting.AttributesCorrect; // You lose out on points for missing a attribute
+            // not a penalty
+            // console.log(`SUB b/c couldn't find attribute`)
             return;
         }
         submission = submission.filter(v => v.label !== templateAttribute.label); // remove it
@@ -96,7 +99,7 @@ function compareAttributes(submission: Attribute[], template: Attribute[], isRel
         }
     });
 
-    marks -= weighting.ExtraAttributes * submission.length;
+    marks -= weighting.ExtraAttributes * (submission.length - lengthAdjust);
     console.log(`SUB b/c extra attrbitues`)
 
     return marks;
