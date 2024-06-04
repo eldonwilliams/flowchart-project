@@ -1,4 +1,5 @@
 const serverItemElement = document.querySelector("#server-items");
+const startupElement = document.querySelector("#start-modal").parentElement;
 const panel = serverItemElement.parentElement;
 const loader = panel.querySelector(".loader");
 const hider = document.querySelector("#hider");
@@ -11,6 +12,16 @@ export function showServerDiscoveryMenu(loading: boolean = true) {
     hider.classList.remove("hidden");
     panel.classList.remove("hidden");
     if (loading) loader.classList.remove("hidden");
+}
+
+export function showStartMenu() {
+    hider.classList.remove("hidden")
+    startupElement.classList.remove("hidden");
+}
+
+export function hideStartMenu() {
+    hider.classList.add("hidden");
+    startupElement.classList.add("hidden");
 }
 
 /**

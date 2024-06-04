@@ -31,6 +31,7 @@ export function findIndexById(
   }
   for (let i = 0; i < vertices.length; i++) {
     if (vertices[i].id === id) {
+      cache?.set(id, i);
       return i;
     }
   }

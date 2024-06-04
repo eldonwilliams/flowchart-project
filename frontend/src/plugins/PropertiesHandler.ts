@@ -27,6 +27,11 @@ export default class PropertiesHandler implements GraphPlugin {
     static pluginId = "PropertiesHandlerPlugin";
     static PROPERTY_ELEMENT = document.querySelector('#properties-mananger').querySelector('form');
 
+    /**
+     * Represents possible options for labels, if set, will cause all labels to become a dropdown
+     */
+    public labelOptions: string[];
+
     graph: Graph;
 
     /**
@@ -47,6 +52,7 @@ export default class PropertiesHandler implements GraphPlugin {
     propertyDrawerCleanupFunctions: Function[] = [];
 
     constructor(graph: Graph) {
+        this.labelOptions = [];
         this.graph = graph;
 
         graph.addListener(InternalEvent.CLICK, this.handleSelectEvent.bind(this));
@@ -92,7 +98,7 @@ export default class PropertiesHandler implements GraphPlugin {
         const graph = this.graph;
 
         function doUpdate(fn: Function, updateEdges: boolean = false) {
-            graph.batchUpdate(fn);
+            graph.batchUpdate(fn as any);
             graph.refresh(vertex);
             if (updateEdges) {
                 graph.getEdges(vertex).forEach(function (edge) {
@@ -110,7 +116,14 @@ export default class PropertiesHandler implements GraphPlugin {
             vertex.geometry[geometry] = Number(input.value);
         }, true);
 
-        this.addProperty(getCellValue(vertex, "label"), PROPERTY_TYPE.STRING, handleLabelChange, { label: "Label", width: "150px", });
+        if (this.labelOptions.length === 0)
+            this.addProperty(getCellValue(vertex, "label"), PROPERTY_TYPE.STRING, handleLabelChange, { label: "Label", width: "150px", });
+        else
+            this.addProperty(getCellValue(vertex, "label"), PROPERTY_TYPE.DROPDOWN, handleLabelChange, {
+                label: "Label",
+                width: "150px",
+                options: this.labelOptions,
+            });
 
         this.startGroup("Geometry - Position");
         this.addProperty(vertex.geometry.x, PROPERTY_TYPE.NUMBER, handleGeometryChange.bind(this, 'x'), { label: "X", width: "75px", });
