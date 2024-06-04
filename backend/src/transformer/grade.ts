@@ -1,91 +1,20 @@
-import { deserializeGraph, ServerEdgeRepresentation, ServerERRespresentation, ServerVertexRepresentation } from "./serialization";
-import { isMatch, isSimilar } from "./util";
+/**
+ * Calculates the maximum grade of a given template, returns a number 
+ * @param template 
+ */
+function calculateMaxGrade(template: any): number {
+    return 0;
+}
 
 /**
- * Weight of grading metric
- * [0, 1]
+ * 
+ * Grades a submission with a given template. It is assumed both have already beeen deserialized.
+ * Returns a destructurable array where element 0 is the grade [0-1] and a string of comments.
+ * 
+ * @param submission 
+ * @param template 
+ * @returns 
  */
-type Weight = number;
-
-function isWeight(w: number): w is Weight {
-  return w >= 0 && w <= 1;
-}
-
-interface Weights {
-  cardinality: Weight;
-  labeling: Weight;
-  shape: Weight;
-  connection: Weight;
-  multivalue: Weight;
-}
-
-export interface Configuration {
-  weights: Weights;
-  labelingDistance: number;
-}
-
-const defaultWeights: Weights = {
-  cardinality: 0.2,
-  labeling: 0.1,
-  shape: 0.3,
-  connection: 0.5,
-  multivalue: 0.1,
-};
-
-export const defaultConfig: Configuration = {
-  labelingDistance: 4,
-  weights: defaultWeights,
-};
-
-const defaults: Configuration = defaultConfig;
-
-function findHomologOfVertex(templateVertex: ServerVertexRepresentation, assignment: ServerERRespresentation): number {
-  return assignment.vertices.findIndex((v) => v.label === templateVertex.label);
-}
-
-function propogatedGrading(
-  templateVertex: ServerVertexRepresentation,
-  assignmentVertex: ServerVertexRepresentation,
-  assignment: ServerERRespresentation,
-  template: ServerERRespresentation,
-  verticiesHit: Set<ServerVertexRepresentation>,
-  edgesHit: Set<ServerEdgeRepresentation>,
-  runningScore: number,
-  weighting: Weights): number {
-  if (verticiesHit.has(templateVertex)) {
-    return runningScore; // hit a loop, deadend
-    // probably malformed
-  }
-
-  verticiesHit.add(templateVertex);
-
-  // grade the differences between the verticies
-  if (templateVertex.edges.length > assignmentVertex.edges.length) {
-    // This means some edges are missing, while they may just be misplaced, we will deduct points for this
-
-  }
-
-  // find all the edges which have these two templates
-  return runningScore;
-}
-
-export default function grade(
-  assignment: ServerERRespresentation,
-  template: ServerERRespresentation,
-  config: Configuration = defaults
-): number {
-  // score is knocked down each time a infraction is found
-  let maxScore =
-    template.vertices.length *
-    Object.values(config.weights).reduce((a, b) => a + b, 0);
-  let score = maxScore;
-
-  let rootIndex = 0;
-  while (rootIndex < template.vertices.length && findHomologOfVertex(template.vertices[rootIndex], assignment) === -1) {
-    rootIndex++;
-  }
-
-
-
-  return score / maxScore;
+export function grade(submission: any, template: any): [number, string] {
+    return [1, ""];
 }
