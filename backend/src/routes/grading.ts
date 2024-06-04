@@ -1,7 +1,7 @@
 import { Application } from "express";
 import { text } from "body-parser";
 import { deserializeGraph } from "../transformer/serialization";
-import grade from "../transformer/grade";
+import { grade } from "../transformer/grade";
 
 export default function Grading(app: Application) {
     app.post('/grading', text({

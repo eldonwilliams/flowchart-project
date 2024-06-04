@@ -1,91 +1,210 @@
-import { deserializeGraph, ServerEdgeRepresentation, ServerERRespresentation, ServerVertexRepresentation } from "./serialization";
-import { isMatch, isSimilar } from "./util";
+import { Attribute, Entity, Graph, Relationship, } from "./serialization";
 
-/**
- * Weight of grading metric
- * [0, 1]
- */
+// correct_entity_name = 0.2  # Default Weighting = 0.2
+// correct_attributes = 0.1  # Default Weighting = 0.1
+// correct_primary_keys = 0.2  # Default Weighting = 0.2
+// extra_entities = 0.25  # Default Weighting = 0.25
+// correct_weak_entities = 0.5  # Default Weighting = 0.5
+// correct_relationship_entities = 0.5  # Default Weighting = 0.5
+// correct_cardinality = 0.25  # Default Weighting = 0.25
+// extra_relationship = 0.25  # Default Weighting = 0.25
+// #  correct_cardinality_text = 0.25  # Default Weighting = 0.25
+// MAXIMUM_GRADE = 10
+
 type Weight = number;
 
-function isWeight(w: number): w is Weight {
-  return w >= 0 && w <= 1;
+function isWeight(a: any): a is Weight {
+    return typeof a === "number" && a > 0 && a < 1;
 }
 
-interface Weights {
-  cardinality: Weight;
-  labeling: Weight;
-  shape: Weight;
-  connection: Weight;
-  multivalue: Weight;
+export interface GradeWeights {
+    EntityName: Weight;
+    AttributesCorrect: Weight;
+    PrimaryKeys: Weight;
+    ExtraEntities: Weight;
+    WeakEntities: Weight;
+    RelationshipEntities: Weight;
+    ExtraRelationshipConnections: Weight;
+    ExtraRelationships: Weight;
+    ExtraAttributes: Weight;
 }
 
-export interface Configuration {
-  weights: Weights;
-  labelingDistance: number;
+const defaultWeights: GradeWeights = {
+    EntityName: 0.2,
+    AttributesCorrect: 0.1,
+    PrimaryKeys: 0.2,
+    ExtraEntities: 0.25,
+    WeakEntities: 0.0, // 0.5,
+    RelationshipEntities: 0.5,
+    ExtraRelationshipConnections: 0.25,
+    ExtraRelationships: 0.25,
+    ExtraAttributes: 0.1
 }
 
-const defaultWeights: Weights = {
-  cardinality: 0.2,
-  labeling: 0.1,
-  shape: 0.3,
-  connection: 0.5,
-  multivalue: 0.1,
-};
+/**
+ * Calculates the maximum grade of a given template, returns a number 
+ * @param template 
+ */
+function calculateMaxGrade(template: Graph, weighting: GradeWeights = defaultWeights): number {
+    let total = 0;
 
-export const defaultConfig: Configuration = {
-  labelingDistance: 4,
-  weights: defaultWeights,
-};
+    template.entities.forEach(v => {
+        total += weighting.EntityName +
+            weighting.AttributesCorrect * v.attributes.length +
+            weighting.PrimaryKeys * v.attributes.filter(a => a.key).length +
+            (v.weak ? weighting.WeakEntities : 0)
+    })
 
-const defaults: Configuration = defaultConfig;
+    template.relationships.forEach(v => {
+        total += weighting.RelationshipEntities +
+            weighting.AttributesCorrect * v.attributes.length
+    })
 
-function findHomologOfVertex(templateVertex: ServerVertexRepresentation, assignment: ServerERRespresentation): number {
-  return assignment.vertices.findIndex((v) => v.label === templateVertex.label);
+    return total;
 }
 
-function propogatedGrading(
-  templateVertex: ServerVertexRepresentation,
-  assignmentVertex: ServerVertexRepresentation,
-  assignment: ServerERRespresentation,
-  template: ServerERRespresentation,
-  verticiesHit: Set<ServerVertexRepresentation>,
-  edgesHit: Set<ServerEdgeRepresentation>,
-  runningScore: number,
-  weighting: Weights): number {
-  if (verticiesHit.has(templateVertex)) {
-    return runningScore; // hit a loop, deadend
-    // probably malformed
-  }
+/**
+ * Compare two arrays of attributes
+ * 
+ * @param submission 
+ * @param template 
+ * @param weighting 
+ * @returns 
+ */
+function compareAttributes(submission: Attribute[], template: Attribute[], isRelation: boolean = false, weighting: GradeWeights = defaultWeights): number {
+    let marks = 0;
+    let lengthAdjust = 0;
 
-  verticiesHit.add(templateVertex);
+    template.forEach(templateAttribute => {
+        // TODO: Change to be more inline with how other things are calculate (take highest marks)
+        // Run through all attributes and see which works best
+        let submissionAttribute = submission.find(a => a.label === templateAttribute.label);
+        if (submissionAttribute === undefined) {
+            lengthAdjust++;
+            return;
+        }
+        submission = submission.filter(v => v.label !== templateAttribute.label); // remove it
 
-  // grade the differences between the verticies
-  if (templateVertex.edges.length > assignmentVertex.edges.length) {
-    // This means some edges are missing, while they may just be misplaced, we will deduct points for this
+        if (submissionAttribute.composite === templateAttribute.composite && submissionAttribute.multivalue === templateAttribute.multivalue) {
+            marks += weighting.AttributesCorrect;
+        }
 
-  }
+        if (templateAttribute.key && submissionAttribute.key === templateAttribute.key && !isRelation) {
+            marks += weighting.PrimaryKeys;
+        }
+    });
 
-  // find all the edges which have these two templates
-  return runningScore;
+    marks -= weighting.ExtraAttributes * (submission.length - lengthAdjust);
+
+    return marks;
 }
 
-export default function grade(
-  assignment: ServerERRespresentation,
-  template: ServerERRespresentation,
-  config: Configuration = defaults
-): number {
-  // score is knocked down each time a infraction is found
-  let maxScore =
-    template.vertices.length *
-    Object.values(config.weights).reduce((a, b) => a + b, 0);
-  let score = maxScore;
+/**
+ * Compares two entities and returns a score
+ * 
+ * @param submission 
+ * @param template 
+ * @param weighting 
+ */
+function compareEntities(submission: Entity, template: Entity, weighting: GradeWeights = defaultWeights): number {
+    let marks = compareAttributes(submission.attributes, template.attributes, false, weighting);
 
-  let rootIndex = 0;
-  while (rootIndex < template.vertices.length && findHomologOfVertex(template.vertices[rootIndex], assignment) === -1) {
-    rootIndex++;
-  }
+    if (submission.label === template.label) {
+        marks += weighting.EntityName;
+    }
 
+    if (submission.weak === template.weak) {
+        marks += weighting.WeakEntities; // I think I am using this wrong
+        // I don't really understand what this does from the AutoER implementation
+        // I think it comes to a difference in how we are doing things, may need to be removed
+    }
 
+    return marks;
+}
 
-  return score / maxScore;
+/**
+ * Compares two relationships and returns a score
+ * 
+ * @param submissionCopy 
+ * @param template 
+ * @param weighting 
+ */
+function compareRelationship(submission: Relationship, template: Relationship, submissionEntities: Entity[], templateEntities: Entity[], weighting: GradeWeights = defaultWeights): number {
+    let marks = compareAttributes(submission.attributes, template.attributes, true, weighting);
+
+    let submissionCopy = { ...submission, attributes: [...submission.attributes], connects: [...submission.connects] } satisfies Relationship
+
+    template.connects.forEach(templateIndex => {
+        let templateEntity = templateEntities[templateIndex];
+        let [_, submissionIndex] = submissionCopy.connects.reduce((pv, submissionIndex) => {
+            if (compareEntities(submissionEntities[submissionIndex], templateEntity, weighting) > pv[0]) {
+                return [compareEntities(submissionEntities[submissionIndex], templateEntity, weighting), submissionIndex];
+            }
+            return pv;
+        }, [-Infinity, -1])
+        submissionCopy.connects = submissionCopy.connects.filter(i => i !== submissionIndex);
+        let submissionEntity = submissionEntities[submissionIndex];
+        if (submissionEntity === undefined) {
+            return;
+        }
+        if (templateEntity.label === submissionEntity.label && templateEntity.weak === submissionEntity.weak) {
+            marks += weighting.RelationshipEntities / template.connects.length;
+        }
+    });
+    marks -= submissionCopy.connects.length * weighting.ExtraRelationshipConnections
+    return marks;
+}
+
+/**
+ * 
+ * Grades a submission with a given template. It is assumed both have already beeen deserialized.
+ * Returns a destructurable array where element 0 is the grade [0-1] and a string of comments.
+ * 
+ * @param submission 
+ * @param template 
+ * @returns 
+ */
+export function grade(submission: Graph, template: Graph, weighting: GradeWeights = defaultWeights): [number, string] {
+    let maxScore = calculateMaxGrade(template, weighting);
+    let studentScore = 0;
+
+    // TODO: make these remove used template entities and relationship object
+    // e.g. if one is found to have highest marks, it should be removed from pool of possible answers
+    // bc the submission cannot have a reponse which maps to two answers
+    let submissionEntitiesCopy = [...submission.entities]
+    for (let i = 0; template.entities.length > i; i++) {
+        let topmarkIndex = -1;
+        let topmark = -Infinity;
+        for (let j = 0; submissionEntitiesCopy.length > j; j++) {
+            let marks = compareEntities(submissionEntitiesCopy[j], template.entities[i], weighting);
+            if (marks > topmark) {
+                topmark = marks;
+                topmarkIndex = j;
+            }
+        }
+        if (topmarkIndex === -1) {
+            break;
+        }
+        submissionEntitiesCopy = submissionEntitiesCopy.filter((_, i) => i !== topmarkIndex);
+        studentScore += topmark;
+    }
+
+    for (let i = 0; template.relationships.length > i; i++) {
+        let topmarkIndex = -1;
+        let topmark = -Infinity;
+        for (let j = 0; submission.relationships.length > j; j++) {
+            let marks = compareRelationship(submission.relationships[j], template.relationships[i], submission.entities, template.entities, weighting);
+            if (marks > topmark) {
+                topmark = marks;
+                topmarkIndex = j;
+            }
+        }
+        if (topmarkIndex === -1) {
+            break;
+        }
+        submission.relationships = submission.relationships.filter((_, i) => i !== topmarkIndex);
+        studentScore += topmark;
+    }
+
+    return [studentScore / maxScore, ""];
 }
